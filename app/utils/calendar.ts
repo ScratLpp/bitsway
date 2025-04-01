@@ -1,3 +1,12 @@
+import { 
+  formatDateForCalDAV, 
+  parseCalDAVDate, 
+  createTimeSlot, 
+  isSlotOverlapping,
+  getUTCDayRange,
+  createUTCDate
+} from './dateHelpers';
+
 // Fonction utilitaire pour formater les dates pour CalDAV
 export function formatDate(date: Date): string {
   const year = date.getUTCFullYear();
@@ -39,24 +48,11 @@ export async function fetchCalendarEvents(date: Date) {
       date.getSeconds()
     ).toString());
 
-    // Créer les dates de début et de fin de journée en UTC
-    // IMPORTANT: Assurons-nous de faire une recherche élargie pour capter tous les événements potentiels
-    const startDate = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate() - 1, // Élargir la recherche au jour précédent
-      0, 0, 0
-    ));
-    const endDate = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate() + 1, // Élargir la recherche au jour suivant
-      23, 59, 59
-    ));
-
+    // Obtenir la plage de dates en UTC
+    const { start: startDate, end: endDate } = getUTCDayRange(date);
     console.log('Date range élargie:', {
-      start: formatDate(startDate),
-      end: formatDate(endDate)
+      start: formatDateForCalDAV(startDate),
+      end: formatDateForCalDAV(endDate)
     });
 
     // D'abord, faire une requête PROPFIND pour obtenir les informations du calendrier
@@ -100,7 +96,7 @@ export async function fetchCalendarEvents(date: Date) {
         <C:filter>
           <C:comp-filter name="VCALENDAR">
             <C:comp-filter name="VEVENT">
-              <C:time-range start="${formatDate(startDate)}" end="${formatDate(endDate)}"/>
+              <C:time-range start="${formatDateForCalDAV(startDate)}" end="${formatDateForCalDAV(endDate)}"/>
             </C:comp-filter>
           </C:comp-filter>
         </C:filter>
@@ -179,33 +175,9 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
       const tzid = tzidMatch ? tzidMatch[1] : null;
       console.log('Timezone info:', tzid || 'not specified');
       
-      // Convertir le format de date (YYYYMMDDTHHmmssZ ou YYYYMMDDTHHmmss)
-      const startDateString = startMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
-      const endDateString = endMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
-      
-      // Si la date n'a pas de Z et pas de TZID, supposer qu'elle est en heure locale
-      const isUTC = startMatch[1].endsWith('Z');
-      console.log('Event time format is UTC?', isUTC);
-      
-      let start, end;
-      
-      if (isUTC) {
-        // Déjà en UTC
-        start = new Date(startDateString);
-        end = new Date(endDateString);
-      } else {
-        // Convertir explicitement en UTC (important: comprendre le fuseau horaire du serveur)
-        // Supposons que les dates sans Z sont dans le fuseau horaire Europe/Paris (UTC+2 en été)
-        const localStartDate = new Date(startDateString);
-        const localEndDate = new Date(endDateString);
-        
-        // Obtenez l'offset en minutes pour convertir de local à UTC
-        const offsetInMinutes = localStartDate.getTimezoneOffset();
-        
-        // Créer des dates UTC en ajustant par l'offset
-        start = new Date(localStartDate.getTime() - offsetInMinutes * 60000);
-        end = new Date(localEndDate.getTime() - offsetInMinutes * 60000);
-      }
+      // Utiliser la fonction helper pour parser les dates
+      const start = parseCalDAVDate(startMatch[1]);
+      const end = parseCalDAVDate(endMatch[1]);
       
       console.log('Parsed dates:', { 
         start: start.toISOString(), 
@@ -228,7 +200,6 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
   console.log('Busy slots reçus:', busySlots.map(slot => ({
     start: slot.start.toISOString(),
     end: slot.end.toISOString(),
-    // Ajouter l'affichage en heure locale pour le débogage
     startLocal: new Date(slot.start).toString(),
     endLocal: new Date(slot.end).toString()
   })));
@@ -237,48 +208,21 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
   const workStart = 9; // 9h
   const workEnd = 18; // 18h
 
-  // Créer la date de début de journée en UTC
-  const startOfDay = new Date(Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    0, 0, 0
-  ));
-  console.log('Début de journée (UTC):', startOfDay.toISOString());
-
   for (let hour = workStart; hour < workEnd; hour++) {
-    const slotStart = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate(),
-      hour, 0, 0
-    ));
-    const slotEnd = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate(),
-      hour + 1, 0, 0
-    ));
-
+    const slot = createTimeSlot(date, hour);
+    
     console.log(`\nVérification du créneau ${hour}:00`);
     console.log('Créneau:', {
-      start: slotStart.toISOString(),
-      end: slotEnd.toISOString(),
-      // Ajouter l'affichage en heure locale pour le débogage
-      startLocal: new Date(slotStart).toString(),
-      endLocal: new Date(slotEnd).toString()
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString(),
+      startLocal: new Date(slot.start).toString(),
+      endLocal: new Date(slot.end).toString()
     });
 
     // Vérifier si le créneau est disponible
     let isAvailable = true;
     
     for (const busy of busySlots) {
-      // Convertir toutes les dates en timestamps pour une comparaison plus précise
-      const slotStartTime = slotStart.getTime();
-      const slotEndTime = slotEnd.getTime();
-      const busyStartTime = busy.start.getTime();
-      const busyEndTime = busy.end.getTime();
-      
       console.log('Comparaison avec le créneau occupé:', {
         busyStart: busy.start.toISOString(),
         busyEnd: busy.end.toISOString(),
@@ -286,21 +230,7 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
         busyEndLocal: new Date(busy.end).toString()
       });
       
-      const overlaps = (
-        (slotStartTime >= busyStartTime && slotStartTime < busyEndTime) ||
-        (slotEndTime > busyStartTime && slotEndTime <= busyEndTime) ||
-        (slotStartTime <= busyStartTime && slotEndTime >= busyEndTime)
-      );
-      
-      console.log('Résultat de la comparaison:', {
-        slotStartTime,
-        slotEndTime,
-        busyStartTime,
-        busyEndTime,
-        overlaps
-      });
-      
-      if (overlaps) {
+      if (isSlotOverlapping(slot, busy)) {
         isAvailable = false;
         console.log(`Créneau ${hour}:00 marqué comme indisponible à cause de cet événement`);
         break;
@@ -311,7 +241,7 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
 
     if (isAvailable) {
       slots.push({
-        time: slotStart.toISOString(),
+        time: slot.start.toISOString(),
         label: `${hour.toString().padStart(2, '0')}:00`,
       });
     }
