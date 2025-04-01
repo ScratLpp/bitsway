@@ -199,10 +199,16 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
       const busyStart = new Date(busy.start);
       const busyEnd = new Date(busy.end);
       
+      // Convertir toutes les dates en timestamps pour une comparaison plus précise
+      const slotStartTime = slotStart.getTime();
+      const slotEndTime = slotEnd.getTime();
+      const busyStartTime = busyStart.getTime();
+      const busyEndTime = busyEnd.getTime();
+      
       const overlaps = (
-        (slotStart >= busyStart && slotStart < busyEnd) ||
-        (slotEnd > busyStart && slotEnd <= busyEnd) ||
-        (slotStart <= busyStart && slotEnd >= busyEnd)
+        (slotStartTime >= busyStartTime && slotStartTime < busyEndTime) ||
+        (slotEndTime > busyStartTime && slotEndTime <= busyEndTime) ||
+        (slotStartTime <= busyStartTime && slotEndTime >= busyEndTime)
       );
       
       console.log(`Checking against busy slot ${busyStart.toISOString()} - ${busyEnd.toISOString()}: ${overlaps}`);
