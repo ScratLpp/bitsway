@@ -17,12 +17,23 @@ async function fetchCalendarEvents(date: Date) {
   }
 
   console.log('Fetching calendar events for date:', date.toISOString());
-  console.log('Using credentials:', { username, password: '***' });
+
+  // Formater les dates pour CalDAV (format YYYYMMDDTHHmmssZ)
+  const formatDate = (d: Date) => {
+    return d.toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}Z$/, 'Z');
+  };
 
   const startDate = new Date(date);
-  startDate.setHours(0, 0, 0, 0);
+  startDate.setUTCHours(0, 0, 0, 0);
   const endDate = new Date(date);
-  endDate.setHours(23, 59, 59, 999);
+  endDate.setUTCHours(23, 59, 59, 999);
+
+  console.log('Date range:', {
+    start: formatDate(startDate),
+    end: formatDate(endDate)
+  });
 
   // D'abord, faire une requête PROPFIND pour obtenir les informations du calendrier
   const propfindXml = `<?xml version="1.0" encoding="utf-8" ?>
@@ -66,7 +77,7 @@ async function fetchCalendarEvents(date: Date) {
         <C:filter>
           <C:comp-filter name="VCALENDAR">
             <C:comp-filter name="VEVENT">
-              <C:time-range start="${startDate.toISOString()}" end="${endDate.toISOString()}"/>
+              <C:time-range start="${formatDate(startDate)}" end="${formatDate(endDate)}"/>
             </C:comp-filter>
           </C:comp-filter>
         </C:filter>
