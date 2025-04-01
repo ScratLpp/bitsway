@@ -5,6 +5,17 @@ async function fetchCalendarEvents(date: Date) {
   const password = process.env.CALDAV_PASSWORD;
   const calendarUrl = 'https://zimbra1.mail.ovh.net/dav/contact@bitsway.fr/Calendar/';
 
+  console.log('Environment variables check:', {
+    hasUsername: !!username,
+    hasPassword: !!password,
+    username: username || 'not set',
+    password: password ? '***' : 'not set'
+  });
+
+  if (!username || !password) {
+    throw new Error('CalDAV credentials are not configured. Please check CALDAV_USERNAME and CALDAV_PASSWORD environment variables.');
+  }
+
   console.log('Fetching calendar events for date:', date.toISOString());
   console.log('Using credentials:', { username, password: '***' });
 
@@ -24,6 +35,7 @@ async function fetchCalendarEvents(date: Date) {
 
   try {
     // Première requête pour vérifier l'accès
+    console.log('Making PROPFIND request to:', calendarUrl);
     const propfindResponse = await fetch(calendarUrl, {
       method: 'PROPFIND',
       headers: {
@@ -36,8 +48,12 @@ async function fetchCalendarEvents(date: Date) {
       body: propfindXml,
     });
 
+    console.log('PROPFIND response status:', propfindResponse.status);
+    const propfindText = await propfindResponse.text();
+    console.log('PROPFIND response:', propfindText);
+
     if (!propfindResponse.ok) {
-      throw new Error(`PROPFIND failed: ${propfindResponse.status}`);
+      throw new Error(`PROPFIND failed: ${propfindResponse.status} - ${propfindText}`);
     }
 
     // Ensuite, faire la requête REPORT pour les événements
@@ -56,6 +72,7 @@ async function fetchCalendarEvents(date: Date) {
         </C:filter>
       </C:calendar-query>`;
 
+    console.log('Making REPORT request with XML:', reportXml);
     const response = await fetch(calendarUrl, {
       method: 'REPORT',
       headers: {
@@ -68,9 +85,9 @@ async function fetchCalendarEvents(date: Date) {
       body: reportXml,
     });
 
-    console.log('CalDAV response status:', response.status);
+    console.log('REPORT response status:', response.status);
     const responseText = await response.text();
-    console.log('CalDAV response:', responseText);
+    console.log('REPORT response:', responseText);
 
     if (!response.ok) {
       throw new Error(`REPORT failed: ${response.status} - ${responseText}`);
