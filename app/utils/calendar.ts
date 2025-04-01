@@ -1,8 +1,5 @@
-import { NextResponse } from 'next/server';
-import { fetchCalendarEvents, generateAvailableSlots } from '@/app/utils/calendar';
-
 // Fonction utilitaire pour formater les dates pour CalDAV
-function formatDate(date: Date): string {
+export function formatDate(date: Date): string {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const day = String(date.getUTCDate()).padStart(2, '0');
@@ -164,7 +161,7 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
   return events;
 }
 
-function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date }[]) {
+export function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date }[]) {
   console.log('=== Début de generateAvailableSlots ===');
   console.log('Date reçue:', date.toISOString());
   console.log('Busy slots reçus:', busySlots.map(slot => ({
@@ -251,49 +248,4 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
   console.log('\nCréneaux disponibles générés:', slots);
   console.log('=== Fin de generateAvailableSlots ===');
   return slots;
-}
-
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const dateParam = searchParams.get('date');
-
-    if (!dateParam) {
-      return NextResponse.json(
-        { error: 'Date parameter is required' },
-        { status: 400 }
-      );
-    }
-
-    console.log('\n=== Nouvelle requête de créneaux disponibles ===');
-    console.log('Date reçue:', dateParam);
-    const date = new Date(dateParam);
-    
-    // S'assurer que la date est en UTC
-    const utcDate = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate()
-    ));
-    
-    console.log('Date convertie en UTC:', utcDate.toISOString());
-    
-    const busySlots = await fetchCalendarEvents(utcDate);
-    console.log('Créneaux occupés récupérés:', busySlots.map(slot => ({
-      start: slot.start.toISOString(),
-      end: slot.end.toISOString()
-    })));
-    
-    const availableSlots = generateAvailableSlots(utcDate, busySlots);
-    console.log('Créneaux disponibles générés:', availableSlots);
-    console.log('=== Fin de la requête ===\n');
-
-    return NextResponse.json({ slots: availableSlots });
-  } catch (error) {
-    console.error('Erreur lors de la récupération des créneaux disponibles:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to get available slots' },
-      { status: 500 }
-    );
-  }
 } 
