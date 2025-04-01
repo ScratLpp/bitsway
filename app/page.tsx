@@ -3,14 +3,16 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, Bitcoin, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin } from "lucide-react"
+import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, Bitcoin, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
+import { BookingModal } from "@/components/booking-modal"
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -62,7 +64,7 @@ export default function Home() {
               Contact
             </Link>
           </nav>
-          <Button>Prendre Rendez-vous</Button>
+          <Button onClick={() => setIsBookingModalOpen(true)}>Prendre Rendez-vous</Button>
         </div>
       </header>
       <main className="flex-1">
@@ -446,7 +448,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex justify-center">
-              <Button size="lg">
+              <Button size="lg" onClick={() => setIsBookingModalOpen(true)}>
                 Prendre rendez-vous
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -482,6 +484,22 @@ export default function Home() {
                     <div>
                       <h3 className="font-semibold text-white">Téléphone</h3>
                       <p className="text-sm text-white/80">+33 6 12 34 56 78</p>
+                    </div>
+                  </Link>
+                  <Link 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setIsBookingModalOpen(true)
+                    }}
+                    className="flex items-center gap-4 group"
+                  >
+                    <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
+                      <Calendar className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white">Prendre rendez-vous</h3>
+                      <p className="text-sm text-white/80">Planifier une consultation</p>
                     </div>
                   </Link>
                 </div>
@@ -561,6 +579,10 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)} 
+      />
     </div>
   )
 }
