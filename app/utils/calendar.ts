@@ -33,13 +33,13 @@ export async function fetchCalendarEvents(date: Date) {
     const startDate = new Date(Date.UTC(
       date.getUTCFullYear(),
       date.getUTCMonth(),
-      date.getUTCDate() - 1,  // Soustraction d'un jour
+      date.getUTCDate(),
       0, 0, 0
     ));
     const endDate = new Date(Date.UTC(
       date.getUTCFullYear(),
       date.getUTCMonth(),
-      date.getUTCDate() - 1,  // Soustraction d'un jour
+      date.getUTCDate(),
       23, 59, 59
     ));
 
@@ -204,8 +204,23 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
 
     // Vérifier si le créneau est disponible
     const isAvailable = !busySlots.some(busy => {
-      const busyStart = new Date(busy.start);
-      const busyEnd = new Date(busy.end);
+      // Convertir les dates occupées en UTC pour la comparaison
+      const busyStart = new Date(Date.UTC(
+        busy.start.getUTCFullYear(),
+        busy.start.getUTCMonth(),
+        busy.start.getUTCDate(),
+        busy.start.getUTCHours(),
+        busy.start.getUTCMinutes(),
+        busy.start.getUTCSeconds()
+      ));
+      const busyEnd = new Date(Date.UTC(
+        busy.end.getUTCFullYear(),
+        busy.end.getUTCMonth(),
+        busy.end.getUTCDate(),
+        busy.end.getUTCHours(),
+        busy.end.getUTCMinutes(),
+        busy.end.getUTCSeconds()
+      ));
       
       console.log('Comparaison avec le créneau occupé:', {
         busyStart: busyStart.toISOString(),
