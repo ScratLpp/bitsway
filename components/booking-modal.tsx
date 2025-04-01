@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "react-hot-toast"
 
 interface BookingModalProps {
   isOpen: boolean
@@ -25,30 +26,49 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ isOpen, onClose }: BookingModalProps) {
-  const [date, setDate] = useState<Date>()
+  const [date, setDate] = useState<Date | null>(null)
   const [time, setTime] = useState("")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [availableSlots, setAvailableSlots] = useState<{ time: string; label: string }[]>([])
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Générer les créneaux horaires disponibles (9h-18h)
-  const timeSlots = Array.from({ length: 10 }, (_, i) => {
-    const hour = i + 9
-    return `${hour.toString().padStart(2, '0')}:00`
-  })
+  useEffect(() => {
+    if (date) {
+      setIsLoadingSlots(true)
+      fetch(`/api/available-slots?date=${date.toISOString()}`)
+        .then(res => res.json())
+        .then(data => {
+          setAvailableSlots(data.slots || [])
+          setIsLoadingSlots(false)
+        })
+        .catch(error => {
+          console.error('Error fetching available slots:', error)
+          setIsLoadingSlots(false)
+        })
+    } else {
+      setAvailableSlots([])
+    }
+  }, [date])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!date || !time || !name || !email) return
+    
+    if (!date || !time || !name || !email) {
+      toast.error('Veuillez remplir tous les champs obligatoires')
+      return
+    }
 
-    setStatus("loading")
+    setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/booking", {
-        method: "POST",
+      const response = await fetch('/api/booking', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           date: date.toISOString(),
@@ -56,23 +76,32 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
           name,
           email,
           message,
+          isVideo: false,
         }),
       })
 
-      if (!response.ok) throw new Error("Erreur lors de la prise de rendez-vous")
+      if (!response.ok) {
+        throw new Error('Failed to submit booking')
+      }
+
+      toast.success('Votre demande a été envoyée ! Nous vous contacterons rapidement pour confirmer le rendez-vous.')
       
-      setStatus("success")
-      // Réinitialiser le formulaire
-      setDate(undefined)
-      setTime("")
-      setName("")
-      setEmail("")
-      setMessage("")
+      // Reset form
+      setDate(null)
+      setTime('')
+      setName('')
+      setEmail('')
+      setMessage('')
       
-      // Fermer la modal après 2 secondes
-      setTimeout(onClose, 2000)
+      // Close modal after delay
+      setTimeout(() => {
+        onClose()
+      }, 2000)
     } catch (error) {
-      setStatus("error")
+      console.error('Error submitting booking:', error)
+      toast.error('Une erreur est survenue. Veuillez réessayer.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -96,16 +125,26 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 />
               </div>
               <div className="flex-1 flex items-center">
-                <Select value={time} onValueChange={setTime}>
+                <Select 
+                  value={time} 
+                  onValueChange={setTime}
+                  disabled={!date || isLoadingSlots}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Choisir une heure" />
+                    <SelectValue placeholder={isLoadingSlots ? "Chargement..." : "Choisir une heure"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {timeSlots.map((slot) => (
-                      <SelectItem key={slot} value={slot}>
-                        {slot}
+                    {availableSlots.length > 0 ? (
+                      availableSlots.map((slot) => (
+                        <SelectItem key={slot.time} value={slot.time}>
+                          {slot.label}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="" disabled>
+                        Aucun créneau disponible
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -142,10 +181,10 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
           <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-muted p-3 rounded-lg">
             <Video className="h-4 w-4" />
-            <span>Le rendez-vous se déroulera en visioconférence via Google Meet. Vous recevrez le lien quelques minutes avant le rendez-vous.</span>
+            <span>Le rendez-vous se déroulera en visioconférence. Nous vous enverrons le lien de la réunion quelques minutes avant le rendez-vous.</span>
           </div>
 
-          <Button type="submit" className="w-full" disabled={status === "loading"}>
+          <Button type="submit" className="w-full" disabled={status === "loading" || isSubmitting}>
             {status === "loading" ? "Envoi en cours..." : "Confirmer le rendez-vous"}
           </Button>
 

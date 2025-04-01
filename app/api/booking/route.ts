@@ -11,15 +11,13 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: 'Bitsway <contact@bitsway.fr>',
       to: email,
-      subject: 'Confirmation de votre rendez-vous',
+      subject: 'Demande de rendez-vous',
       html: `
-        <h2>Confirmation de votre rendez-vous</h2>
+        <h2>Demande de rendez-vous reçue</h2>
         <p>Bonjour ${name},</p>
-        <p>Votre rendez-vous a été confirmé pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${time}.</p>
-        <p>Le rendez-vous se déroulera en visioconférence via Google Meet.</p>
-        <p>Nous vous enverrons le lien de la réunion quelques minutes avant le rendez-vous.</p>
+        <p>Nous avons bien reçu votre demande de rendez-vous pour le ${new Date(date).toLocaleDateString('fr-FR')} à ${time}.</p>
+        <p>Nous vous contacterons dans les plus brefs délais pour confirmer ce créneau ou vous proposer une alternative.</p>
         ${message ? `<p>Message: ${message}</p>` : ''}
-        <p>Nous vous attendons !</p>
         <p>Cordialement,<br>L'équipe Bitsway</p>
       `,
     });
@@ -28,15 +26,15 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: 'Bitsway <contact@bitsway.fr>',
       to: 'contact@bitsway.fr',
-      subject: 'Nouveau rendez-vous',
+      subject: 'Nouvelle demande de rendez-vous',
       html: `
-        <h2>Nouveau rendez-vous</h2>
+        <h2>Nouvelle demande de rendez-vous</h2>
         <p><strong>Client:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Date:</strong> ${new Date(date).toLocaleDateString('fr-FR')}</p>
-        <p><strong>Heure:</strong> ${time}</p>
+        <p><strong>Date souhaitée:</strong> ${new Date(date).toLocaleDateString('fr-FR')}</p>
+        <p><strong>Heure souhaitée:</strong> ${time}</p>
         ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
-        <p><strong>Action requise:</strong> Créer une réunion Google Meet et envoyer le lien au client.</p>
+        <p><strong>Action requise:</strong> Vérifier la disponibilité dans le calendrier et confirmer le rendez-vous.</p>
       `,
     });
 
