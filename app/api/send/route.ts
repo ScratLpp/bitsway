@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const data = await resend.emails.send({
       from: 'Bitsway <contact@bitsway.fr>',
-      to: ['contact@bitsway.fr', 'gaetanlepape@gmail.com'],
+      to: 'contact@bitsway.fr',
       subject: `Nouveau message de ${name}`,
       text: `
         Nom: ${name}
