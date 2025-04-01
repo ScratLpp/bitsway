@@ -84,26 +84,36 @@ async function fetchCalendarEvents(date: Date) {
 }
 
 function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
-  // Extraire les événements du XML CalDAV
+  console.log('Parsing calendar data:', calendarData);
   const events: { start: Date; end: Date }[] = [];
-  const eventMatches = calendarData.match(/<vevent>[\s\S]*?<\/vevent>/g) || [];
+  
+  // Recherche des événements dans le format CalDAV
+  const eventMatches = calendarData.match(/<C:calendar-data[^>]*>[\s\S]*?<\/C:calendar-data>/g) || [];
+  console.log('Found calendar-data matches:', eventMatches.length);
 
   for (const eventXml of eventMatches) {
-    const startMatch = eventXml.match(/<dtstart[^>]*>(.*?)<\/dtstart>/);
-    const endMatch = eventXml.match(/<dtend[^>]*>(.*?)<\/dtend>/);
+    console.log('Processing event XML:', eventXml);
+    // Recherche des dates dans le format VEVENT
+    const startMatch = eventXml.match(/DTSTART[^:]*:(.*?)(?:\r?\n|$)/);
+    const endMatch = eventXml.match(/DTEND[^:]*:(.*?)(?:\r?\n|$)/);
 
     if (startMatch && endMatch) {
+      console.log('Found event dates:', { start: startMatch[1], end: endMatch[1] });
       events.push({
-        start: new Date(startMatch[1]),
-        end: new Date(endMatch[1]),
+        start: new Date(startMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6')),
+        end: new Date(endMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6')),
       });
     }
   }
 
+  console.log('Parsed events:', events);
   return events;
 }
 
 function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date }[]) {
+  console.log('Generating slots for date:', date.toISOString());
+  console.log('Busy slots:', busySlots);
+  
   const slots = [];
   const workStart = 9; // 9h
   const workEnd = 18; // 18h
@@ -118,11 +128,13 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     const isAvailable = !busySlots.some(busy => {
       const busyStart = new Date(busy.start);
       const busyEnd = new Date(busy.end);
-      return (
+      const overlaps = (
         (slotStart >= busyStart && slotStart < busyEnd) ||
         (slotEnd > busyStart && slotEnd <= busyEnd) ||
         (slotStart <= busyStart && slotEnd >= busyEnd)
       );
+      console.log(`Checking slot ${hour}:00 against busy slot ${busyStart.toISOString()} - ${busyEnd.toISOString()}: ${overlaps}`);
+      return overlaps;
     });
 
     if (isAvailable) {
@@ -133,6 +145,7 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     }
   }
 
+  console.log('Generated available slots:', slots);
   return slots;
 }
 
@@ -148,15 +161,19 @@ export async function GET(request: Request) {
       );
     }
 
+    console.log('Received request for date:', dateParam);
     const date = new Date(dateParam);
     const busySlots = await fetchCalendarEvents(date);
+    console.log('Fetched busy slots:', busySlots);
+    
     const availableSlots = generateAvailableSlots(date, busySlots);
+    console.log('Generated available slots:', availableSlots);
 
     return NextResponse.json({ slots: availableSlots });
   } catch (error) {
     console.error('Error getting available slots:', error);
     return NextResponse.json(
-      { error: 'Failed to get available slots' },
+      { error: error instanceof Error ? error.message : 'Failed to get available slots' },
       { status: 500 }
     );
   }
