@@ -141,12 +141,16 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
       console.log('Found event dates:', { start: startMatch[1], end: endMatch[1] });
       
       // Convertir le format de date (YYYYMMDDTHHmmssZ ou YYYYMMDDTHHmmss)
-      const startDate = startMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
-      const endDate = endMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
+      const startDateString = startMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
+      const endDateString = endMatch[1].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, '$1-$2-$3T$4:$5:$6');
+      
+      // Vérifier si la date se termine par Z (UTC) et l'ajouter si nécessaire
+      const startDateWithZ = startDateString.endsWith('Z') ? startDateString : startDateString + 'Z';
+      const endDateWithZ = endDateString.endsWith('Z') ? endDateString : endDateString + 'Z';
       
       // Créer les dates en UTC
-      const start = new Date(startDate + 'Z');
-      const end = new Date(endDate + 'Z');
+      const start = new Date(startDateWithZ);
+      const end = new Date(endDateWithZ);
       
       console.log('Parsed dates:', { 
         start: start.toISOString(), 
@@ -204,23 +208,9 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
 
     // Vérifier si le créneau est disponible
     const isAvailable = !busySlots.some(busy => {
-      // Convertir les dates occupées en UTC pour la comparaison
-      const busyStart = new Date(Date.UTC(
-        busy.start.getUTCFullYear(),
-        busy.start.getUTCMonth(),
-        busy.start.getUTCDate(),
-        busy.start.getUTCHours(),
-        busy.start.getUTCMinutes(),
-        busy.start.getUTCSeconds()
-      ));
-      const busyEnd = new Date(Date.UTC(
-        busy.end.getUTCFullYear(),
-        busy.end.getUTCMonth(),
-        busy.end.getUTCDate(),
-        busy.end.getUTCHours(),
-        busy.end.getUTCMinutes(),
-        busy.end.getUTCSeconds()
-      ));
+      // Les dates busy sont déjà en UTC, ne pas les reconvertir
+      const busyStart = busy.start;
+      const busyEnd = busy.end;
       
       console.log('Comparaison avec le créneau occupé:', {
         busyStart: busyStart.toISOString(),
