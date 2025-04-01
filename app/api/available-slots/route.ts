@@ -159,8 +159,12 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
 }
 
 function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date }[]) {
-  console.log('Generating slots for date:', date.toISOString());
-  console.log('Busy slots:', busySlots);
+  console.log('=== Début de generateAvailableSlots ===');
+  console.log('Date reçue:', date.toISOString());
+  console.log('Busy slots reçus:', busySlots.map(slot => ({
+    start: slot.start.toISOString(),
+    end: slot.end.toISOString()
+  })));
   
   const slots = [];
   const workStart = 9; // 9h
@@ -173,7 +177,7 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     date.getUTCDate(),
     0, 0, 0
   ));
-  console.log('Start of day (UTC):', startOfDay.toISOString());
+  console.log('Début de journée (UTC):', startOfDay.toISOString());
 
   for (let hour = workStart; hour < workEnd; hour++) {
     const slotStart = new Date(Date.UTC(
@@ -189,7 +193,8 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
       hour + 1, 0, 0
     ));
 
-    console.log(`Checking slot ${hour}:00 (UTC)`, {
+    console.log(`\nVérification du créneau ${hour}:00`);
+    console.log('Créneau:', {
       start: slotStart.toISOString(),
       end: slotEnd.toISOString()
     });
@@ -199,6 +204,11 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
       const busyStart = new Date(busy.start);
       const busyEnd = new Date(busy.end);
       
+      console.log('Comparaison avec le créneau occupé:', {
+        busyStart: busyStart.toISOString(),
+        busyEnd: busyEnd.toISOString()
+      });
+
       // Convertir toutes les dates en timestamps pour une comparaison plus précise
       const slotStartTime = slotStart.getTime();
       const slotEndTime = slotEnd.getTime();
@@ -211,9 +221,18 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
         (slotStartTime <= busyStartTime && slotEndTime >= busyEndTime)
       );
       
-      console.log(`Checking against busy slot ${busyStart.toISOString()} - ${busyEnd.toISOString()}: ${overlaps}`);
+      console.log('Résultat de la comparaison:', {
+        slotStartTime,
+        slotEndTime,
+        busyStartTime,
+        busyEndTime,
+        overlaps
+      });
+      
       return overlaps;
     });
+
+    console.log(`Créneau ${hour}:00 est ${isAvailable ? 'disponible' : 'indisponible'}`);
 
     if (isAvailable) {
       slots.push({
@@ -223,7 +242,8 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     }
   }
 
-  console.log('Generated available slots:', slots);
+  console.log('\nCréneaux disponibles générés:', slots);
+  console.log('=== Fin de generateAvailableSlots ===');
   return slots;
 }
 
@@ -239,7 +259,8 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log('Received request for date:', dateParam);
+    console.log('\n=== Nouvelle requête de créneaux disponibles ===');
+    console.log('Date reçue:', dateParam);
     const date = new Date(dateParam);
     
     // S'assurer que la date est en UTC
@@ -249,17 +270,21 @@ export async function GET(request: Request) {
       date.getUTCDate()
     ));
     
-    console.log('UTC date for fetching events:', utcDate.toISOString());
+    console.log('Date convertie en UTC:', utcDate.toISOString());
     
     const busySlots = await fetchCalendarEvents(utcDate);
-    console.log('Fetched busy slots:', busySlots);
+    console.log('Créneaux occupés récupérés:', busySlots.map(slot => ({
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString()
+    })));
     
     const availableSlots = generateAvailableSlots(utcDate, busySlots);
-    console.log('Generated available slots:', availableSlots);
+    console.log('Créneaux disponibles générés:', availableSlots);
+    console.log('=== Fin de la requête ===\n');
 
     return NextResponse.json({ slots: availableSlots });
   } catch (error) {
-    console.error('Error getting available slots:', error);
+    console.error('Erreur lors de la récupération des créneaux disponibles:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to get available slots' },
       { status: 500 }
