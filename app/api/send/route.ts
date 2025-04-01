@@ -5,11 +5,22 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
+    console.log('API Key available:', !!process.env.RESEND_API_KEY);
+    
     const { name, email, message } = await req.json();
+    console.log('Received form data:', { name, email, message });
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured');
+      return NextResponse.json(
+        { error: 'Configuration Resend manquante' },
+        { status: 500 }
+      );
+    }
 
     const data = await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: 'contact@bitsway.fr',
+      from: 'Bitsway <onboarding@resend.dev>',
+      to: ['contact@bitsway.fr', 'gaetanlepape@gmail.com'],
       subject: `Nouveau message de ${name}`,
       text: `
         Nom: ${name}
@@ -25,8 +36,13 @@ export async function POST(req: Request) {
       `,
     });
 
+    console.log('Email sent successfully:', data);
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Erreur lors de l\'envoi de l\'email' }, { status: 500 });
+    console.error('Error sending email:', error);
+    return NextResponse.json(
+      { error: 'Erreur lors de l\'envoi de l\'email', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 
