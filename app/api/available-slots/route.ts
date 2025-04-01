@@ -1,5 +1,17 @@
 import { NextResponse } from 'next/server';
 
+// Fonction utilitaire pour formater les dates pour CalDAV
+function formatDate(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+  
+  return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+}
+
 async function fetchCalendarEvents(date: Date) {
   const username = process.env.CALDAV_USERNAME;
   const password = process.env.CALDAV_PASSWORD;
@@ -289,5 +301,115 @@ export async function GET(request: Request) {
       { error: error instanceof Error ? error.message : 'Failed to get available slots' },
       { status: 500 }
     );
+  }
+}
+
+export async function fetchCalendarEvents(date: Date) {
+  try {
+    const calendarUrl = 'https://zimbra1.mail.ovh.net/dav/contact@bitsway.fr/Calendar/';
+    const username = process.env.CALDAV_USERNAME;
+    const password = process.env.CALDAV_PASSWORD;
+
+    if (!username || !password) {
+      throw new Error('CalDAV credentials not configured');
+    }
+
+    // Créer les dates de début et de fin de journée en UTC
+    const startDate = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      0, 0, 0
+    ));
+    const endDate = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      23, 59, 59
+    ));
+
+    console.log('Date range:', {
+      start: formatDate(startDate),
+      end: formatDate(endDate)
+    });
+
+    // Requête PROPFIND pour vérifier l'accès au calendrier
+    const propfindResponse = await fetch(calendarUrl, {
+      method: 'PROPFIND',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+        'Depth': '0',
+        'Content-Type': 'application/xml',
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0'
+      },
+      body: `<?xml version="1.0" encoding="utf-8"?>
+        <propfind xmlns="DAV:">
+          <prop>
+            <resourcetype/>
+            <displayname/>
+          </prop>
+        </propfind>`
+    });
+
+    if (!propfindResponse.ok) {
+      throw new Error(`Failed to access calendar: ${propfindResponse.status} ${propfindResponse.statusText}`);
+    }
+
+    // Requête REPORT pour récupérer les événements
+    const reportResponse = await fetch(calendarUrl, {
+      method: 'REPORT',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+        'Depth': '1',
+        'Content-Type': 'application/xml',
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0'
+      },
+      body: `<?xml version="1.0" encoding="utf-8"?>
+        <calendar-query xmlns="DAV:" xmlns="urn:ietf:params:xml:ns:caldav">
+          <prop>
+            <getetag/>
+            <calendar-data/>
+          </prop>
+          <filter>
+            <comp-filter name="VCALENDAR">
+              <comp-filter name="VEVENT">
+                <time-range start="${formatDate(startDate)}" end="${formatDate(endDate)}"/>
+              </comp-filter>
+            </comp-filter>
+          </filter>
+        </calendar-query>`
+    });
+
+    if (!reportResponse.ok) {
+      const errorText = await reportResponse.text();
+      throw new Error(`Failed to fetch calendar events: ${reportResponse.status} ${reportResponse.statusText}\n${errorText}`);
+    }
+
+    const responseText = await reportResponse.text();
+    console.log('CalDAV response:', responseText);
+
+    // Parser la réponse XML
+    const busySlots: { start: Date; end: Date }[] = [];
+    const eventRegex = /BEGIN:VEVENT[\s\S]*?DTSTART:([^\r\n]+)[\s\S]*?DTEND:([^\r\n]+)[\s\S]*?END:VEVENT/g;
+    let match;
+
+    while ((match = eventRegex.exec(responseText)) !== null) {
+      const startDate = match[1].replace('Z', '');
+      const endDate = match[2].replace('Z', '');
+      
+      // Convertir les dates en UTC
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      
+      busySlots.push({ start, end });
+    }
+
+    console.log('Parsed busy slots:', busySlots);
+    return busySlots;
+  } catch (error) {
+    console.error('Error fetching calendar events:', error);
+    throw error;
   }
 } 
