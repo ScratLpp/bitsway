@@ -160,30 +160,39 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
           </div>
           
           <div className="space-y-2">
-            <Label>Nom</Label>
+            <Label htmlFor="name">Nom complet</Label>
             <Input
+              id="name"
+              name="name"
+              type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              autoComplete="name"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
+              id="email"
+              name="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Message (optionnel)</Label>
+            <Label htmlFor="message">Message (optionnel)</Label>
             <Textarea
+              id="message"
+              name="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Sujet du rendez-vous..."
+              autoComplete="off"
             />
           </div>
 

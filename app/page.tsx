@@ -70,13 +70,6 @@ export default function Home() {
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-muted/50 to-muted relative overflow-hidden">
           <div className="absolute inset-0">
-            <Image
-              src="/images/bitcoin-hero.jpg"
-              alt="Bitcoin Treasury"
-              fill
-              className="object-cover opacity-20"
-              priority
-            />
             <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
