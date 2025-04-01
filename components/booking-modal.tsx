@@ -116,13 +116,18 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
             <Label>Date et Heure</Label>
             <div className="flex gap-4">
               <div className="flex-1 border rounded-md p-2">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  locale={fr}
-                  className="rounded-md"
-                />
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date*
+                  </label>
+                  <Calendar
+                    mode="single"
+                    selected={date || undefined}
+                    onSelect={(day) => day && setDate(day)}
+                    disabled={(day) => day < new Date()}
+                    className="rounded-md border"
+                  />
+                </div>
               </div>
               <div className="flex-1 flex items-center">
                 <Select 
@@ -131,7 +136,7 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   disabled={!date || isLoadingSlots}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={isLoadingSlots ? "Chargement..." : "Choisir une heure"} />
+                    <SelectValue placeholder={isLoadingSlots ? "Chargement..." : "Sélectionnez une heure"} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableSlots.length > 0 ? (
@@ -141,7 +146,7 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
                         </SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="no-slots" disabled>
                         Aucun créneau disponible
                       </SelectItem>
                     )}
