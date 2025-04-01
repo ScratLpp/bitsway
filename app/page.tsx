@@ -484,15 +484,6 @@ export default function Home() {
                       <p className="text-sm text-white/80">+33 6 12 34 56 78</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-white/10">
-                      <MapPin className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Adresse</h3>
-                      <p className="text-sm text-white/80">Paris, France</p>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div className="relative">
