@@ -11,6 +11,13 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar as CalendarIcon, Video } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface BookingModalProps {
   isOpen: boolean
@@ -24,6 +31,12 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+
+  // Générer les créneaux horaires disponibles (9h-18h)
+  const timeSlots = Array.from({ length: 10 }, (_, i) => {
+    const hour = i + 9
+    return `${hour.toString().padStart(2, '0')}:00`
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,15 +78,15 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Prendre rendez-vous</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Date et Heure</Label>
-            <div className="flex flex-col gap-4">
-              <div className="border rounded-md p-2">
+            <div className="flex gap-4">
+              <div className="flex-1 border rounded-md p-2">
                 <Calendar
                   mode="single"
                   selected={date}
@@ -82,15 +95,19 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   className="rounded-md"
                 />
               </div>
-              <div>
-                <Input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
-                  min="09:00"
-                  max="18:00"
-                />
+              <div className="flex-1 flex items-center">
+                <Select value={time} onValueChange={setTime}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir une heure" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeSlots.map((slot) => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
