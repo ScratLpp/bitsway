@@ -136,9 +136,16 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
       const start = new Date(startDate + 'Z');
       const end = new Date(endDate + 'Z');
       
-      console.log('Parsed dates:', { start: start.toISOString(), end: end.toISOString() });
+      // Ajuster pour le fuseau horaire local
+      const localStart = new Date(start.getTime() - (start.getTimezoneOffset() * 60000));
+      const localEnd = new Date(end.getTime() - (end.getTimezoneOffset() * 60000));
       
-      events.push({ start, end });
+      console.log('Parsed dates:', { 
+        start: localStart.toISOString(), 
+        end: localEnd.toISOString() 
+      });
+      
+      events.push({ start: localStart, end: localEnd });
     }
   }
 
@@ -154,18 +161,18 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
   const workStart = 9; // 9h
   const workEnd = 18; // 18h
 
-  // Créer la date de début de journée en UTC
+  // Créer la date de début de journée en heure locale
   const startOfDay = new Date(date);
-  startOfDay.setUTCHours(0, 0, 0, 0);
-  console.log('Start of day (UTC):', startOfDay.toISOString());
+  startOfDay.setHours(0, 0, 0, 0);
+  console.log('Start of day (local):', startOfDay.toISOString());
 
   for (let hour = workStart; hour < workEnd; hour++) {
     const slotStart = new Date(startOfDay);
-    slotStart.setUTCHours(hour, 0, 0, 0);
+    slotStart.setHours(hour, 0, 0, 0);
     const slotEnd = new Date(startOfDay);
-    slotEnd.setUTCHours(hour + 1, 0, 0, 0);
+    slotEnd.setHours(hour + 1, 0, 0, 0);
 
-    console.log(`Checking slot ${hour}:00 (UTC)`, {
+    console.log(`Checking slot ${hour}:00 (local)`, {
       start: slotStart.toISOString(),
       end: slotEnd.toISOString()
     });
@@ -183,8 +190,10 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     });
 
     if (isAvailable) {
+      // Convertir en UTC pour le stockage
+      const utcSlotStart = new Date(slotStart.getTime() + (slotStart.getTimezoneOffset() * 60000));
       slots.push({
-        time: slotStart.toISOString(),
+        time: utcSlotStart.toISOString(),
         label: `${hour.toString().padStart(2, '0')}:00`,
       });
     }
@@ -209,19 +218,14 @@ export async function GET(request: Request) {
     console.log('Received request for date:', dateParam);
     const date = new Date(dateParam);
     
-    // S'assurer que la date est en UTC
-    const utcDate = new Date(Date.UTC(
-      date.getUTCFullYear(),
-      date.getUTCMonth(),
-      date.getUTCDate()
-    ));
+    // Convertir la date en heure locale
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    console.log('Local date for fetching events:', localDate.toISOString());
     
-    console.log('UTC date for fetching events:', utcDate.toISOString());
-    
-    const busySlots = await fetchCalendarEvents(utcDate);
+    const busySlots = await fetchCalendarEvents(localDate);
     console.log('Fetched busy slots:', busySlots);
     
-    const availableSlots = generateAvailableSlots(utcDate, busySlots);
+    const availableSlots = generateAvailableSlots(localDate, busySlots);
     console.log('Generated available slots:', availableSlots);
 
     return NextResponse.json({ slots: availableSlots });
