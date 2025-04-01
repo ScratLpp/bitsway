@@ -23,7 +23,6 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
-  const [isVideo, setIsVideo] = useState(false)
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +43,6 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
           name,
           email,
           message,
-          isVideo,
         }),
       })
 
@@ -57,7 +55,6 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
       setName("")
       setEmail("")
       setMessage("")
-      setIsVideo(false)
       
       // Fermer la modal après 2 secondes
       setTimeout(onClose, 2000)
@@ -74,26 +71,25 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Date</Label>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="col-span-2">
-                <div className="border rounded-md p-2">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    locale={fr}
-                    className="rounded-md"
-                  />
-                </div>
+            <Label>Date et Heure</Label>
+            <div className="flex flex-col gap-4">
+              <div className="border rounded-md p-2">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  locale={fr}
+                  className="rounded-md"
+                />
               </div>
-              <div className="space-y-2">
-                <Label>Heure</Label>
+              <div>
                 <Input
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
+                  min="09:00"
+                  max="18:00"
                 />
               </div>
             </div>
@@ -127,19 +123,9 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              className={cn(
-                "flex items-center gap-2",
-                isVideo && "bg-primary text-primary-foreground"
-              )}
-              onClick={() => setIsVideo(!isVideo)}
-            >
-              <Video className="h-4 w-4" />
-              Visio
-            </Button>
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+            <Video className="h-4 w-4" />
+            <span>Le rendez-vous se déroulera en visioconférence via Google Meet. Vous recevrez le lien quelques minutes avant le rendez-vous.</span>
           </div>
 
           <Button type="submit" className="w-full" disabled={status === "loading"}>
@@ -147,7 +133,7 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
           </Button>
 
           {status === "success" && (
-            <p className="text-sm text-green-600">Rendez-vous confirmé ! Vous recevrez un email de confirmation.</p>
+            <p className="text-sm text-green-600">Rendez-vous confirmé ! Vous recevrez un email avec le lien de la réunion.</p>
           )}
           {status === "error" && (
             <p className="text-sm text-red-600">Une erreur est survenue. Veuillez réessayer.</p>
