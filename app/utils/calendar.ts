@@ -33,13 +33,13 @@ export async function fetchCalendarEvents(date: Date) {
     const startDate = new Date(Date.UTC(
       date.getUTCFullYear(),
       date.getUTCMonth(),
-      date.getUTCDate(),
+      date.getUTCDate() - 1,  // Soustraction d'un jour
       0, 0, 0
     ));
     const endDate = new Date(Date.UTC(
       date.getUTCFullYear(),
       date.getUTCMonth(),
-      date.getUTCDate(),
+      date.getUTCDate() - 1,  // Soustraction d'un jour
       23, 59, 59
     ));
 
