@@ -5,6 +5,9 @@ async function fetchCalendarEvents(date: Date) {
   const password = process.env.CALDAV_PASSWORD;
   const calendarUrl = 'https://zimbra1.mail.ovh.net/dav/contact@bitsway.fr/Calendar';
 
+  console.log('Fetching calendar events for date:', date.toISOString());
+  console.log('Using credentials:', { username, password: '***' });
+
   const startDate = new Date(date);
   startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(date);
@@ -26,6 +29,7 @@ async function fetchCalendarEvents(date: Date) {
     </C:calendar-query>`;
 
   try {
+    console.log('Sending CalDAV request to:', calendarUrl);
     const response = await fetch(calendarUrl, {
       method: 'REPORT',
       headers: {
@@ -36,12 +40,15 @@ async function fetchCalendarEvents(date: Date) {
       body: reportXml,
     });
 
+    console.log('CalDAV response status:', response.status);
+    const responseText = await response.text();
+    console.log('CalDAV response:', responseText);
+
     if (!response.ok) {
       throw new Error(`CalDAV request failed: ${response.status}`);
     }
 
-    const data = await response.text();
-    return parseCalendarData(data);
+    return parseCalendarData(responseText);
   } catch (error) {
     console.error('Error fetching calendar events:', error);
     throw error;
