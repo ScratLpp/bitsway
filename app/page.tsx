@@ -1,13 +1,44 @@
+"use client"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, Bitcoin, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator } from "lucide-react"
+import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, Bitcoin, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react"
 
 export default function Home() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus("loading")
+
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) throw new Error("Erreur lors de l'envoi")
+
+      setStatus("success")
+      setFormData({ name: "", email: "", message: "" })
+    } catch (error) {
+      setStatus("error")
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
@@ -435,30 +466,30 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary-foreground/10">
-                      <Globe className="h-5 w-5" />
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Mail className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold">Email</h3>
-                      <p className="text-sm text-primary-foreground/80">contact@bitsway.com</p>
+                      <p className="text-sm text-muted-foreground">gaetanlepape@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary-foreground/10">
-                      <Users className="h-5 w-5" />
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Phone className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold">Téléphone</h3>
-                      <p className="text-sm text-primary-foreground/80">+33 1 23 45 67 89</p>
+                      <p className="text-sm text-muted-foreground">+33 6 12 34 56 78</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary-foreground/10">
-                      <Shield className="h-5 w-5" />
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <MapPin className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold">Adresse</h3>
-                      <p className="text-sm text-primary-foreground/80">123 Avenue des Champs-Élysées, 75008 Paris</p>
+                      <p className="text-sm text-muted-foreground">Paris, France</p>
                     </div>
                   </div>
                 </div>
@@ -466,35 +497,47 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary-foreground/10 to-transparent rounded-2xl blur-3xl" />
                 <div className="relative bg-background/10 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-                  <form className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Nom</label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 rounded-md bg-background/20 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
-                          placeholder="Votre nom"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Email</label>
-                        <input
-                          type="email"
-                          className="w-full px-3 py-2 rounded-md bg-background/20 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
-                          placeholder="votre@email.com"
-                        />
-                      </div>
-                    </div>
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Message</label>
-                      <textarea
-                        className="w-full px-3 py-2 rounded-md bg-background/20 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 min-h-[100px]"
-                        placeholder="Votre message"
+                      <Label htmlFor="name">Nom</Label>
+                      <Input
+                        id="name"
+                        placeholder="Votre nom"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
                       />
                     </div>
-                    <Button className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                      Envoyer
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="votre@email.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        placeholder="Votre message"
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={status === "loading"}>
+                      {status === "loading" ? "Envoi en cours..." : "Envoyer"}
                     </Button>
+                    {status === "success" && (
+                      <p className="text-green-500 text-sm">Message envoyé avec succès !</p>
+                    )}
+                    {status === "error" && (
+                      <p className="text-red-500 text-sm">Une erreur est survenue. Veuillez réessayer.</p>
+                    )}
                   </form>
                 </div>
               </div>
