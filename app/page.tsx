@@ -548,13 +548,13 @@ export default function Home() {
               <span className="text-sm font-medium">Bitsway</span>
             </div>
             <div className="flex gap-4 text-sm text-muted-foreground">
-              <Link href="#" className="hover:text-primary">
+              <Link href="/legal/mentions-legales" className="hover:text-primary">
                 Mentions légales
               </Link>
-              <Link href="#" className="hover:text-primary">
+              <Link href="/legal/politique-confidentialite" className="hover:text-primary">
                 Politique de confidentialité
               </Link>
-              <Link href="#" className="hover:text-primary">
+              <Link href="/legal/cgu" className="hover:text-primary">
                 CGU
               </Link>
             </div>
