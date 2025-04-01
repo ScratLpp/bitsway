@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
-import { fetchCalendarEvents } from '@/app/utils/calendar';
+import { fetchCalendarEvents, generateAvailableSlots } from '@/app/utils/calendar';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -67,46 +67,46 @@ export async function POST(request: Request) {
 }
 
 // Endpoint pour récupérer les créneaux disponibles
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const date = searchParams.get('date');
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get('date');
 
-    if (!date) {
-      return NextResponse.json({ error: 'Date requise' }, { status: 400 });
-    }
-
-    // Récupérer les événements du jour
-    const events = await calendar.events.list({
-      calendarId: 'primary',
-      timeMin: new Date(date).toISOString(),
-      timeMax: new Date(new Date(date).setHours(23, 59, 59)).toISOString(),
-      singleEvents: true,
-      orderBy: 'startTime',
-    });
-
-    // Générer les créneaux disponibles (9h-18h)
-    const availableSlots = [];
-    const busySlots = events.data.items?.map(event => ({
-      start: new Date(event.start?.dateTime || event.start?.date || '').getHours(),
-      end: new Date(event.end?.dateTime || event.end?.date || '').getHours(),
-    })) || [];
-
-    for (let hour = 9; hour < 18; hour++) {
-      const isSlotAvailable = !busySlots.some(slot => 
-        hour >= slot.start && hour < slot.end
+    if (!dateParam) {
+      return NextResponse.json(
+        { error: 'Date parameter is required' },
+        { status: 400 }
       );
-
-      if (isSlotAvailable) {
-        availableSlots.push(`${hour.toString().padStart(2, '0')}:00`);
-      }
     }
 
-    return NextResponse.json({ availableSlots });
+    console.log('\n=== Nouvelle requête de créneaux disponibles ===');
+    console.log('Date reçue:', dateParam);
+    const date = new Date(dateParam);
+    
+    // S'assurer que la date est en UTC
+    const utcDate = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate()
+    ));
+    
+    console.log('Date convertie en UTC:', utcDate.toISOString());
+    
+    const busySlots = await fetchCalendarEvents(utcDate);
+    console.log('Créneaux occupés récupérés:', busySlots.map(slot => ({
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString()
+    })));
+    
+    const availableSlots = generateAvailableSlots(utcDate, busySlots);
+    console.log('Créneaux disponibles générés:', availableSlots);
+    console.log('=== Fin de la requête ===\n');
+
+    return NextResponse.json({ slots: availableSlots });
   } catch (error) {
     console.error('Error fetching available slots:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des créneaux' },
+      { error: error instanceof Error ? error.message : 'Failed to get available slots' },
       { status: 500 }
     );
   }
