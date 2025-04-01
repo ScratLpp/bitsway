@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 async function fetchCalendarEvents(date: Date) {
   const username = process.env.CALDAV_USERNAME;
   const password = process.env.CALDAV_PASSWORD;
-  const calendarUrl = 'https://zimbra1.mail.ovh.net/dav/contact@bitsway.fr/Calendar';
+  const calendarUrl = 'https://zimbra1.mail.ovh.net/dav/contact@bitsway.fr/Calendar/';
 
   console.log('Fetching calendar events for date:', date.toISOString());
   console.log('Using credentials:', { username, password: '***' });
@@ -36,6 +36,8 @@ async function fetchCalendarEvents(date: Date) {
         'Content-Type': 'application/xml; charset=utf-8',
         'Depth': '1',
         'Authorization': 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0',
       },
       body: reportXml,
     });
@@ -45,7 +47,7 @@ async function fetchCalendarEvents(date: Date) {
     console.log('CalDAV response:', responseText);
 
     if (!response.ok) {
-      throw new Error(`CalDAV request failed: ${response.status}`);
+      throw new Error(`CalDAV request failed: ${response.status} - ${responseText}`);
     }
 
     return parseCalendarData(responseText);
@@ -58,11 +60,11 @@ async function fetchCalendarEvents(date: Date) {
 function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
   // Extraire les événements du XML CalDAV
   const events: { start: Date; end: Date }[] = [];
-  const eventMatches = calendarData.match(/<vevent>.*?<\/vevent>/gs) || [];
+  const eventMatches = calendarData.match(/<vevent>[\s\S]*?<\/vevent>/g) || [];
 
   for (const eventXml of eventMatches) {
-    const startMatch = eventXml.match(/<dtstart>(.*?)<\/dtstart>/);
-    const endMatch = eventXml.match(/<dtend>(.*?)<\/dtend>/);
+    const startMatch = eventXml.match(/<dtstart[^>]*>(.*?)<\/dtstart>/);
+    const endMatch = eventXml.match(/<dtend[^>]*>(.*?)<\/dtend>/);
 
     if (startMatch && endMatch) {
       events.push({
