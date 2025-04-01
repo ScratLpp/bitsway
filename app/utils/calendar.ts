@@ -25,20 +25,8 @@ export async function fetchCalendarEvents(date: Date) {
     const username = process.env.CALDAV_USERNAME;
     const password = process.env.CALDAV_PASSWORD;
 
-    console.log('Environment variables check:', {
-      hasUsername: !!username,
-      hasPassword: !!password,
-      username: username || 'not set',
-      password: password ? '***' : 'not set'
-    });
-
-    if (!username || !password) {
-      throw new Error('CalDAV credentials are not configured. Please check CALDAV_USERNAME and CALDAV_PASSWORD environment variables.');
-    }
-
-    console.log('Fetching calendar events for date:', date.toISOString());
-    
-    // Important: Pour être sûr, afficher également la date en format local
+    console.log('=== Début de fetchCalendarEvents ===');
+    console.log('Date demandée:', date.toISOString());
     console.log('Date locale équivalente:', new Date(
       date.getFullYear(),
       date.getMonth(),
@@ -48,11 +36,17 @@ export async function fetchCalendarEvents(date: Date) {
       date.getSeconds()
     ).toString());
 
+    if (!username || !password) {
+      throw new Error('CalDAV credentials are not configured');
+    }
+
     // Obtenir la plage de dates en UTC
     const { start: startDate, end: endDate } = getUTCDayRange(date);
-    console.log('Date range élargie:', {
-      start: formatDateForCalDAV(startDate),
-      end: formatDateForCalDAV(endDate)
+    console.log('Plage de dates recherchée:', {
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      startLocal: new Date(startDate).toString(),
+      endLocal: new Date(endDate).toString()
     });
 
     // D'abord, faire une requête PROPFIND pour obtenir les informations du calendrier
@@ -125,6 +119,12 @@ export async function fetchCalendarEvents(date: Date) {
 
     // Récupérer tous les événements, puis les filtrer par date exacte après
     const allEvents = parseCalendarData(responseText);
+    console.log('Tous les événements trouvés:', allEvents.map(event => ({
+      start: event.start.toISOString(),
+      end: event.end.toISOString(),
+      startLocal: new Date(event.start).toString(),
+      endLocal: new Date(event.end).toString()
+    })));
     
     // Filtrer les événements pour ne garder que ceux du jour demandé
     const targetDateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -133,11 +133,22 @@ export async function fetchCalendarEvents(date: Date) {
     const filteredEvents = allEvents.filter(event => {
       const eventDateStr = event.start.toISOString().split('T')[0];
       const isMatch = eventDateStr === targetDateStr;
-      console.log(`Événement le ${eventDateStr} - correspond à ${targetDateStr}? ${isMatch}`);
+      console.log(`Événement le ${eventDateStr} - correspond à ${targetDateStr}? ${isMatch}`, {
+        eventStart: event.start.toISOString(),
+        eventEnd: event.end.toISOString(),
+        eventStartLocal: new Date(event.start).toString(),
+        eventEndLocal: new Date(event.end).toString()
+      });
       return isMatch;
     });
     
-    console.log(`Après filtrage: ${filteredEvents.length} événements sur ${allEvents.length} correspondent à la date ${targetDateStr}`);
+    console.log('Événements filtrés pour la date:', filteredEvents.map(event => ({
+      start: event.start.toISOString(),
+      end: event.end.toISOString(),
+      startLocal: new Date(event.start).toString(),
+      endLocal: new Date(event.end).toString()
+    })));
+    console.log('=== Fin de fetchCalendarEvents ===');
     
     return filteredEvents;
   } catch (error) {
@@ -147,57 +158,61 @@ export async function fetchCalendarEvents(date: Date) {
 }
 
 function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
-  console.log('Parsing calendar data:', calendarData);
-  const events: { start: Date; end: Date }[] = [];
+  console.log('=== Début de parseCalendarData ===');
+  console.log('Données CalDAV reçues:', calendarData);
   
-  // Recherche des événements dans le format CalDAV
+  const events: { start: Date; end: Date }[] = [];
   const eventMatches = calendarData.match(/<C:calendar-data[^>]*>[\s\S]*?<\/C:calendar-data>/g) || [];
-  console.log('Found calendar-data matches:', eventMatches.length);
+  console.log('Nombre d\'événements trouvés dans les données:', eventMatches.length);
 
   for (const eventXml of eventMatches) {
-    console.log('Processing event XML:', eventXml);
-    // Recherche des dates dans le format VEVENT
+    console.log('Traitement d\'un événement:', eventXml);
+    
     const startMatch = eventXml.match(/DTSTART[^:]*:(.*?)(?:\r?\n|$)/);
     const endMatch = eventXml.match(/DTEND[^:]*:(.*?)(?:\r?\n|$)/);
-    // Essayer de récupérer le résumé aussi pour plus de contexte
     const summaryMatch = eventXml.match(/SUMMARY:(.*?)(?:\r?\n|$)/);
     const summary = summaryMatch ? summaryMatch[1] : 'Pas de titre';
 
     if (startMatch && endMatch) {
-      console.log('Found event dates:', { 
+      console.log('Dates trouvées pour l\'événement:', {
         summary,
-        start: startMatch[1], 
-        end: endMatch[1] 
+        startRaw: startMatch[1],
+        endRaw: endMatch[1]
       });
       
-      // Rechercher la timezone si présente
       const tzidMatch = eventXml.match(/TZID=(.*?)[:;]/);
       const tzid = tzidMatch ? tzidMatch[1] : null;
-      console.log('Timezone info:', tzid || 'not specified');
+      console.log('Timezone info:', tzid || 'non spécifié');
       
-      // Utiliser la fonction helper pour parser les dates
       const start = parseCalDAVDate(startMatch[1]);
       const end = parseCalDAVDate(endMatch[1]);
       
-      console.log('Parsed dates:', { 
-        start: start.toISOString(), 
+      console.log('Dates parsées:', {
+        start: start.toISOString(),
         end: end.toISOString(),
-        localEquivalentStart: new Date(start.getTime()).toString(),
-        localEquivalentEnd: new Date(end.getTime()).toString()
+        startLocal: new Date(start).toString(),
+        endLocal: new Date(end).toString()
       });
       
       events.push({ start, end });
     }
   }
 
-  console.log('Parsed events:', events);
+  console.log('Événements parsés:', events.map(event => ({
+    start: event.start.toISOString(),
+    end: event.end.toISOString(),
+    startLocal: new Date(event.start).toString(),
+    endLocal: new Date(event.end).toString()
+  })));
+  console.log('=== Fin de parseCalendarData ===');
+  
   return events;
 }
 
 export function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date }[]) {
   console.log('=== Début de generateAvailableSlots ===');
   console.log('Date reçue:', date.toISOString());
-  console.log('Busy slots reçus:', busySlots.map(slot => ({
+  console.log('Créneaux occupés reçus:', busySlots.map(slot => ({
     start: slot.start.toISOString(),
     end: slot.end.toISOString(),
     startLocal: new Date(slot.start).toString(),
@@ -212,14 +227,13 @@ export function generateAvailableSlots(date: Date, busySlots: { start: Date; end
     const slot = createTimeSlot(date, hour);
     
     console.log(`\nVérification du créneau ${hour}:00`);
-    console.log('Créneau:', {
+    console.log('Créneau à vérifier:', {
       start: slot.start.toISOString(),
       end: slot.end.toISOString(),
       startLocal: new Date(slot.start).toString(),
       endLocal: new Date(slot.end).toString()
     });
 
-    // Vérifier si le créneau est disponible
     let isAvailable = true;
     
     for (const busy of busySlots) {
