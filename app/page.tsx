@@ -467,50 +467,51 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Mail className="h-6 w-6 text-primary" />
+                    <div className="p-2 rounded-lg bg-white/10">
+                      <Mail className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Email</h3>
-                      <p className="text-sm text-muted-foreground">gaetanlepape@gmail.com</p>
+                      <h3 className="font-semibold text-white">Email</h3>
+                      <p className="text-sm text-white/80">gaetanlepape@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Phone className="h-6 w-6 text-primary" />
+                    <div className="p-2 rounded-lg bg-white/10">
+                      <Phone className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Téléphone</h3>
-                      <p className="text-sm text-muted-foreground">+33 6 12 34 56 78</p>
+                      <h3 className="font-semibold text-white">Téléphone</h3>
+                      <p className="text-sm text-white/80">+33 6 12 34 56 78</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <MapPin className="h-6 w-6 text-primary" />
+                    <div className="p-2 rounded-lg bg-white/10">
+                      <MapPin className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Adresse</h3>
-                      <p className="text-sm text-muted-foreground">Paris, France</p>
+                      <h3 className="font-semibold text-white">Adresse</h3>
+                      <p className="text-sm text-white/80">Paris, France</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary-foreground/10 to-transparent rounded-2xl blur-3xl" />
-                <div className="relative bg-background/10 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+                <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Nom</Label>
+                      <Label htmlFor="name" className="text-white">Nom</Label>
                       <Input
                         id="name"
                         placeholder="Votre nom"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
+                        className="bg-white border-white/20 text-black placeholder:text-gray-500"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email" className="text-white">Email</Label>
                       <Input
                         id="email"
                         type="email"
@@ -518,26 +519,28 @@ export default function Home() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
+                        className="bg-white border-white/20 text-black placeholder:text-gray-500"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
+                      <Label htmlFor="message" className="text-white">Message</Label>
                       <Textarea
                         id="message"
                         placeholder="Votre message"
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
+                        className="bg-white border-white/20 text-black placeholder:text-gray-500"
                       />
                     </div>
                     <Button type="submit" className="w-full" disabled={status === "loading"}>
                       {status === "loading" ? "Envoi en cours..." : "Envoyer"}
                     </Button>
                     {status === "success" && (
-                      <p className="text-green-500 text-sm">Message envoyé avec succès !</p>
+                      <p className="text-white text-sm">Message envoyé avec succès !</p>
                     )}
                     {status === "error" && (
-                      <p className="text-red-500 text-sm">Une erreur est survenue. Veuillez réessayer.</p>
+                      <p className="text-white text-sm">Une erreur est survenue. Veuillez réessayer.</p>
                     )}
                   </form>
                 </div>
