@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 
+// Configuration du formulaire de contact avec Resend
 export default function Home() {
   const [formData, setFormData] = useState({
     name: "",
