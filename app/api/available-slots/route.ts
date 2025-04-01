@@ -25,10 +25,19 @@ async function fetchCalendarEvents(date: Date) {
       .replace(/\.\d{3}Z$/, 'Z');
   };
 
-  const startDate = new Date(date);
-  startDate.setUTCHours(0, 0, 0, 0);
-  const endDate = new Date(date);
-  endDate.setUTCHours(23, 59, 59, 999);
+  // Créer les dates de début et de fin de journée en UTC
+  const startDate = new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    0, 0, 0
+  ));
+  const endDate = new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    23, 59, 59
+  ));
 
   console.log('Date range:', {
     start: formatDate(startDate),
@@ -136,16 +145,12 @@ function parseCalendarData(calendarData: string): { start: Date; end: Date }[] {
       const start = new Date(startDate + 'Z');
       const end = new Date(endDate + 'Z');
       
-      // Ajuster pour le fuseau horaire local
-      const localStart = new Date(start.getTime() - (start.getTimezoneOffset() * 60000));
-      const localEnd = new Date(end.getTime() - (end.getTimezoneOffset() * 60000));
-      
       console.log('Parsed dates:', { 
-        start: localStart.toISOString(), 
-        end: localEnd.toISOString() 
+        start: start.toISOString(), 
+        end: end.toISOString() 
       });
       
-      events.push({ start: localStart, end: localEnd });
+      events.push({ start, end });
     }
   }
 
@@ -161,18 +166,30 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
   const workStart = 9; // 9h
   const workEnd = 18; // 18h
 
-  // Créer la date de début de journée en heure locale
-  const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
-  console.log('Start of day (local):', startOfDay.toISOString());
+  // Créer la date de début de journée en UTC
+  const startOfDay = new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    0, 0, 0
+  ));
+  console.log('Start of day (UTC):', startOfDay.toISOString());
 
   for (let hour = workStart; hour < workEnd; hour++) {
-    const slotStart = new Date(startOfDay);
-    slotStart.setHours(hour, 0, 0, 0);
-    const slotEnd = new Date(startOfDay);
-    slotEnd.setHours(hour + 1, 0, 0, 0);
+    const slotStart = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      hour, 0, 0
+    ));
+    const slotEnd = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      hour + 1, 0, 0
+    ));
 
-    console.log(`Checking slot ${hour}:00 (local)`, {
+    console.log(`Checking slot ${hour}:00 (UTC)`, {
       start: slotStart.toISOString(),
       end: slotEnd.toISOString()
     });
@@ -190,10 +207,8 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
     });
 
     if (isAvailable) {
-      // Convertir en UTC pour le stockage
-      const utcSlotStart = new Date(slotStart.getTime() + (slotStart.getTimezoneOffset() * 60000));
       slots.push({
-        time: utcSlotStart.toISOString(),
+        time: slotStart.toISOString(),
         label: `${hour.toString().padStart(2, '0')}:00`,
       });
     }
@@ -218,14 +233,19 @@ export async function GET(request: Request) {
     console.log('Received request for date:', dateParam);
     const date = new Date(dateParam);
     
-    // Convertir la date en heure locale
-    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-    console.log('Local date for fetching events:', localDate.toISOString());
+    // S'assurer que la date est en UTC
+    const utcDate = new Date(Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate()
+    ));
     
-    const busySlots = await fetchCalendarEvents(localDate);
+    console.log('UTC date for fetching events:', utcDate.toISOString());
+    
+    const busySlots = await fetchCalendarEvents(utcDate);
     console.log('Fetched busy slots:', busySlots);
     
-    const availableSlots = generateAvailableSlots(localDate, busySlots);
+    const availableSlots = generateAvailableSlots(utcDate, busySlots);
     console.log('Generated available slots:', availableSlots);
 
     return NextResponse.json({ slots: availableSlots });
