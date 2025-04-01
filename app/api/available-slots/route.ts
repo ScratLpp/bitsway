@@ -26,7 +26,6 @@ async function fetchCalendarEvents(date: Date) {
   };
 
   // Créer les dates de début et de fin de journée en UTC
-  // On ajoute un jour pour s'assurer de récupérer tous les événements
   const startDate = new Date(Date.UTC(
     date.getUTCFullYear(),
     date.getUTCMonth(),
@@ -36,8 +35,8 @@ async function fetchCalendarEvents(date: Date) {
   const endDate = new Date(Date.UTC(
     date.getUTCFullYear(),
     date.getUTCMonth(),
-    date.getUTCDate() + 1, // Ajouter un jour
-    0, 0, 0
+    date.getUTCDate(),
+    23, 59, 59
   ));
 
   console.log('Date range:', {
@@ -197,7 +196,6 @@ function generateAvailableSlots(date: Date, busySlots: { start: Date; end: Date 
 
     // Vérifier si le créneau est disponible
     const isAvailable = !busySlots.some(busy => {
-      // Convertir les dates en UTC pour la comparaison
       const busyStart = new Date(busy.start);
       const busyEnd = new Date(busy.end);
       
