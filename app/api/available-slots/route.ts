@@ -13,23 +13,49 @@ async function fetchCalendarEvents(date: Date) {
   const endDate = new Date(date);
   endDate.setHours(23, 59, 59, 999);
 
-  const reportXml = `<?xml version="1.0" encoding="utf-8" ?>
-    <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  // D'abord, faire une requête PROPFIND pour obtenir les informations du calendrier
+  const propfindXml = `<?xml version="1.0" encoding="utf-8" ?>
+    <D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
       <D:prop>
-        <D:getetag/>
-        <C:calendar-data/>
+        <D:displayname/>
+        <C:calendar-description/>
       </D:prop>
-      <C:filter>
-        <C:comp-filter name="VCALENDAR">
-          <C:comp-filter name="VEVENT">
-            <C:time-range start="${startDate.toISOString()}" end="${endDate.toISOString()}"/>
-          </C:comp-filter>
-        </C:comp-filter>
-      </C:filter>
-    </C:calendar-query>`;
+    </D:propfind>`;
 
   try {
-    console.log('Sending CalDAV request to:', calendarUrl);
+    // Première requête pour vérifier l'accès
+    const propfindResponse = await fetch(calendarUrl, {
+      method: 'PROPFIND',
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Depth': '1',
+        'Authorization': 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
+        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0',
+      },
+      body: propfindXml,
+    });
+
+    if (!propfindResponse.ok) {
+      throw new Error(`PROPFIND failed: ${propfindResponse.status}`);
+    }
+
+    // Ensuite, faire la requête REPORT pour les événements
+    const reportXml = `<?xml version="1.0" encoding="utf-8" ?>
+      <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+        <D:prop>
+          <D:getetag/>
+          <C:calendar-data/>
+        </D:prop>
+        <C:filter>
+          <C:comp-filter name="VCALENDAR">
+            <C:comp-filter name="VEVENT">
+              <C:time-range start="${startDate.toISOString()}" end="${endDate.toISOString()}"/>
+            </C:comp-filter>
+          </C:comp-filter>
+        </C:filter>
+      </C:calendar-query>`;
+
     const response = await fetch(calendarUrl, {
       method: 'REPORT',
       headers: {
@@ -47,7 +73,7 @@ async function fetchCalendarEvents(date: Date) {
     console.log('CalDAV response:', responseText);
 
     if (!response.ok) {
-      throw new Error(`CalDAV request failed: ${response.status} - ${responseText}`);
+      throw new Error(`REPORT failed: ${response.status} - ${responseText}`);
     }
 
     return parseCalendarData(responseText);
