@@ -121,7 +121,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section id="benefits" className="w-full py-6 md:py-12 lg:py-16 relative overflow-hidden">
+        <section id="benefits" className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95 z-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-primary/10 to-transparent opacity-50 z-0" />
@@ -189,7 +189,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section id="services" className="w-full py-6 md:py-12 lg:py-16 relative overflow-hidden bg-gradient-to-b from-muted/50 to-muted">
+        <section id="services" className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden bg-gradient-to-b from-muted/50 to-muted">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
@@ -253,7 +253,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section id="expertise" className="w-full py-6 md:py-12 lg:py-16 relative overflow-hidden">
+        <section id="expertise" className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95 z-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-primary/10 to-transparent opacity-50 z-0" />
@@ -367,7 +367,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full py-6 md:py-12 lg:py-16 relative overflow-hidden bg-gradient-to-b from-muted/50 to-muted">
+        <section className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden bg-gradient-to-b from-muted/50 to-muted">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
@@ -427,7 +427,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full py-6 md:py-12 lg:py-16 relative overflow-hidden bg-white">
+        <section className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden bg-white">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95 z-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-primary/10 to-transparent opacity-50 z-0" />
@@ -453,7 +453,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section id="contact" className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground">
+        <section id="contact" className="w-full py-12 md:py-16 lg:py-20 bg-primary text-primary-foreground">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="flex flex-col justify-center space-y-4">
@@ -466,24 +466,24 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-white/10">
-                      <Mail className="h-6 w-6 text-white" />
+                  <Link href="mailto:contact@bitsway.fr" className="flex items-center gap-4 group">
+                    <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
+                      <Mail className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Email</h3>
-                      <p className="text-sm text-white/80">gaetanlepape@gmail.com</p>
+                      <p className="text-sm text-white/80">contact@bitsway.fr</p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-lg bg-white/10">
-                      <Phone className="h-6 w-6 text-white" />
+                  </Link>
+                  <Link href="tel:+33612345678" className="flex items-center gap-4 group">
+                    <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
+                      <Phone className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Téléphone</h3>
                       <p className="text-sm text-white/80">+33 6 12 34 56 78</p>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
               <div className="relative">
