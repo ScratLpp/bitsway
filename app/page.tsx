@@ -8,11 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
-import { BookingModal } from "@/components/booking-modal"
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -574,10 +572,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      <BookingModal 
-        isOpen={isBookingModalOpen} 
-        onClose={() => setIsBookingModalOpen(false)} 
-      />
     </div>
   )
 }
