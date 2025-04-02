@@ -107,10 +107,12 @@ export default function Home() {
                   <Image
                     src="/bitcoin-expert.png"
                     alt="Bitcoin Treasury Management"
-                    width={600}
-                    height={600}
+                    width={400}
+                    height={400}
                     className="w-full h-auto rounded-2xl"
                     priority
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 400px"
                   />
                 </div>
               </div>
