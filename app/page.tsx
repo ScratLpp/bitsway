@@ -70,23 +70,35 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden">
+        <section className="w-full pt-4 pb-12 md:pt-8 md:pb-16 lg:pt-12 lg:pb-20 bg-gradient-to-b from-muted/50 to-muted relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
+          </div>
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Optimisez votre trésorerie avec le Bitcoin
+                  <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
+                    Nouvelle ère de la trésorerie
+                  </div>
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
+                    Protégez et optimisez votre trésorerie avec Bitcoin
                   </h1>
-                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Découvrez comment le Bitcoin peut transformer votre gestion de trésorerie avec notre expertise.
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                    Nous accompagnons les entreprises dans la gestion de leur capital en intégrant Bitcoin comme actif
+                    stratégique.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button asChild size="lg">
                     <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
-                      Prendre rendez-vous <ArrowRight className="ml-2 h-4 w-4" />
+                      Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
+                  </Button>
+                  <Button size="lg" variant="outline">
+                    En savoir plus
                   </Button>
                 </div>
               </div>
