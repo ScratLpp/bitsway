@@ -64,7 +64,11 @@ export default function Home() {
               Contact
             </Link>
           </nav>
-          <Button onClick={() => setIsBookingModalOpen(true)}>Prendre Rendez-vous</Button>
+          <Button asChild>
+            <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
+              Prendre Rendez-vous
+            </Link>
+          </Button>
         </div>
       </header>
       <main className="flex-1">
@@ -441,7 +445,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex justify-center">
-              <Button asChild className="w-full">
+              <Button asChild size="lg">
                 <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
                   Prendre rendez-vous <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -481,11 +485,8 @@ export default function Home() {
                     </div>
                   </Link>
                   <Link 
-                    href="#" 
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setIsBookingModalOpen(true)
-                    }}
+                    href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card"
+                    target="_blank"
                     className="flex items-center gap-4 group"
                   >
                     <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
