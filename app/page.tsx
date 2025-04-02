@@ -464,13 +464,13 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <Link href="mailto:contact@bitsway.fr" className="flex items-center gap-4 group">
+                  <Link href="mailto:gaetanlepape@bitsway.fr" className="flex items-center gap-4 group">
                     <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
                       <Mail className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Email</h3>
-                      <p className="text-sm text-white/80">contact@bitsway.fr</p>
+                      <p className="text-sm text-white/80">gaetanlepape@bitsway.fr</p>
                     </div>
                   </Link>
                   <Link href="tel:+33612345678" className="flex items-center gap-4 group">
