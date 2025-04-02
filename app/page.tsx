@@ -3,11 +3,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, Bitcoin, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2 } from "lucide-react"
+import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2 } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
+import { Logo } from "@/components/ui/logo"
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
@@ -45,7 +46,7 @@ export default function Home() {
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-2">
-            <Bitcoin className="h-6 w-6 text-primary" />
+            <Logo className="h-8 w-8" />
             <span className="text-xl font-bold">Bitsway</span>
           </div>
           <nav className="hidden md:flex gap-6">
@@ -556,7 +557,7 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <Bitcoin className="h-5 w-5 text-primary" />
+              <Logo className="h-6 w-6" />
               <span className="text-sm font-medium">Bitsway</span>
             </div>
             <div className="flex gap-4 text-sm text-muted-foreground">

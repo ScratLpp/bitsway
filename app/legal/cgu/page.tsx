@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Bitcoin } from "lucide-react"
+import { Logo } from "@/components/ui/logo"
 
 export default function CGU() {
   return (
@@ -7,7 +7,7 @@ export default function CGU() {
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-2">
-            <Bitcoin className="h-6 w-6 text-primary" />
+            <Logo className="h-6 w-6" />
             <span className="text-xl font-bold">Bitsway</span>
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function CGU() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <Bitcoin className="h-5 w-5 text-primary" />
+              <Logo className="h-5 w-5" />
               <span className="text-sm font-medium">Bitsway</span>
             </div>
             <div className="flex gap-4 text-sm text-muted-foreground">
