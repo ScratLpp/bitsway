@@ -70,50 +70,34 @@ export default function Home() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-muted/50 to-muted relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
-          </div>
+        <section className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
-                    Nouvelle ère de la trésorerie
-                  </div>
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
-                    Protégez et optimisez votre trésorerie avec Bitcoin
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Optimisez votre trésorerie avec le Bitcoin
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Nous accompagnons les entreprises dans la gestion de leur capital en intégrant Bitcoin comme actif
-                    stratégique.
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Découvrez comment le Bitcoin peut transformer votre gestion de trésorerie avec notre expertise.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg">
-                    Découvrir nos solutions
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button size="lg" variant="outline">
-                    En savoir plus
+                  <Button asChild size="lg">
+                    <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
+                      Prendre rendez-vous <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/5 rounded-2xl blur-3xl" />
-                <div className="relative rounded-2xl overflow-hidden aspect-square">
-                  <Image
-                    src="/images/bitcoin-hero-right.jpg"
-                    alt="Bitcoin Treasury"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
-                </div>
-                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+              <div className="flex items-center justify-center">
+                <Image
+                  alt="Bitcoin Treasury Management"
+                  className="aspect-[1/1] overflow-hidden rounded-xl object-cover"
+                  height={600}
+                  src="/bitcoin-expert.png"
+                  width={600}
+                />
               </div>
             </div>
           </div>
