@@ -441,9 +441,10 @@ export default function Home() {
               </p>
             </div>
             <div className="flex justify-center">
-              <Button size="lg" onClick={() => setIsBookingModalOpen(true)}>
-                Prendre rendez-vous
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button asChild className="w-full">
+                <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
+                  Prendre rendez-vous <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
