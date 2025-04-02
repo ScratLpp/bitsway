@@ -102,14 +102,17 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  alt="Bitcoin Treasury Management"
-                  className="aspect-[1/1] overflow-hidden rounded-xl object-cover"
-                  height={600}
-                  src="/bitcoin-expert.png"
-                  width={600}
-                />
+              <div className="relative w-full max-w-[600px] mx-auto">
+                <div className="relative">
+                  <Image
+                    src="/bitcoin-expert.png"
+                    alt="Bitcoin Treasury Management"
+                    width={600}
+                    height={600}
+                    className="w-full h-auto rounded-2xl"
+                    priority
+                  />
+                </div>
               </div>
             </div>
           </div>
