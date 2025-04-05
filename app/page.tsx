@@ -206,18 +206,74 @@ export default function Home() {
                 Des solutions adaptées pour intégrer Bitcoin dans votre stratégie financière
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <GraduationCap className="h-5 w-5 text-primary" />
+                    Formation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Formation des dirigeants et équipes financières aux fondamentaux de Bitcoin et à son positionnement comme actif stratégique au sein de la trésorerie d'entreprise.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    Audit
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Évaluation de la trésorerie et du contexte économique de l'entreprise pour structurer une allocation en Bitcoin.
+                  </p>
+                </CardContent>
+              </Card>
               <Card className="relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-primary" />
-                    Stratégie d'investissement
+                    Conseil
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Analyse personnalisée et élaboration d'une stratégie d'allocation optimale pour votre trésorerie.
+                    Conseil en investissement pour définir une stratégie d'exposition adaptée au contexte économique et aux conditions de marché.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                    Structuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Accompagnement opérationnel et structuration de l'environnement d'investissement.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5 text-primary" />
+                    Pilotage
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Encadrement opérationnel de l'exposition à Bitcoin, intégrant une veille de marché continue et des signaux d'ajustement alignés sur l'évolution du contexte économique.
                   </p>
                 </CardContent>
               </Card>
@@ -226,26 +282,12 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Shield className="h-5 w-5 text-primary" />
-                    Conformité réglementaire
+                    Intégration
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Accompagnement complet pour assurer la conformité de vos investissements avec la réglementation en vigueur.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-primary" />
-                    Optimisation fiscale
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Conseils experts pour maximiser les avantages fiscaux liés à l'intégration de Bitcoin dans votre trésorerie.
+                    Accompagnement auprès des services comptables et juridiques de l'entreprise pour faciliter l'intégration de Bitcoin dans les processus internes.
                   </p>
                 </CardContent>
               </Card>
@@ -473,15 +515,6 @@ export default function Home() {
                     <div>
                       <h3 className="font-semibold text-white">Email</h3>
                       <p className="text-sm text-white/80">contact@bitsway.fr</p>
-                    </div>
-                  </Link>
-                  <Link href="tel:+33612345678" className="flex items-center gap-4 group">
-                    <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
-                      <Phone className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Téléphone</h3>
-                      <p className="text-sm text-white/80">+33 6 12 34 56 78</p>
                     </div>
                   </Link>
                   <Link 
