@@ -62,11 +62,7 @@ export default function InflationChart() {
                     const meta = ci.getDatasetMeta(index);
                     
                     // Toggle visibility
-                    if (meta.hidden === null) {
-                      meta.hidden = !ci.data.datasets[index].hidden;
-                    } else {
-                      meta.hidden = null;
-                    }
+                    meta.hidden = meta.hidden === null ? true : !meta.hidden;
                     
                     // Update chart
                     ci.update();
