@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { Logo } from "@/components/ui/logo"
+import InflationChart from './components/InflationChart'
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
@@ -138,7 +139,7 @@ export default function Home() {
                 Le Bitcoin offre des avantages stratégiques pour les entreprises cherchant à protéger leur capital.
               </p>
             </div>
-            <div className="max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               <div className="space-y-3">
                 <div className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
                   <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -183,6 +184,12 @@ export default function Home() {
                       Positionnez votre entreprise comme innovante et tournée vers l'avenir.
                     </p>
                   </div>
+                </div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 -mt-2">
+                <h3 className="text-lg font-bold mb-4 text-center">Que deviennent 1000€ entre 2020 et 2025 ?</h3>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <InflationChart />
                 </div>
               </div>
             </div>
