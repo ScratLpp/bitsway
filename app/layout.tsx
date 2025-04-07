@@ -16,7 +16,11 @@ export const metadata = {
   description:
     "Nous accompagnons les entreprises dans la gestion de leur capital en proposant des solutions adaptées pour investir une partie de leur trésorerie en Bitcoin.",
   generator: 'v0.dev',
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#ffffff'
 }
 

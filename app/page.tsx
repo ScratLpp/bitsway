@@ -11,6 +11,7 @@ import { useState } from "react"
 import { Logo } from "@/components/ui/logo"
 import InflationChart from './components/InflationChart'
 import GrowthChart from './components/GrowthChart'
+import CompaniesChart from './components/CompaniesChart'
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
@@ -63,9 +64,10 @@ export default function Home() {
       chart: "growth"
     },
     {
-      title: "Avantage concurrentiel",
-      description: "Positionnez votre entreprise comme innovante et tournée vers l'avenir.",
-      hasChart: false
+      title: "Adoption croissante",
+      description: "Rejoignez le mouvement des entreprises qui intègrent Bitcoin dans leur trésorerie.",
+      hasChart: true,
+      chart: "companies"
     }
   ]
 
@@ -203,14 +205,24 @@ export default function Home() {
                   {activeBenefit === "Protection contre l'inflation" 
                     ? "Que deviennent 1000€ entre 2020 et 2024 ?"
                     : activeBenefit === "Potentiel de croissance"
-                    ? "Évolution du prix de Bitcoin depuis 2009"
+                    ? "Évolution de la capitalisation de Bitcoin depuis 2016"
+                    : activeBenefit === "Adoption croissante"
+                    ? "Évolution du nombre d'entreprises publiques détenant du Bitcoin"
                     : "Graphique à venir"}
                 </h3>
                 <div className="border border-gray-200 rounded-lg p-4">
                   {activeBenefit === "Protection contre l'inflation" ? (
-                    <InflationChart />
+                    <div className="w-full h-[400px]">
+                      <InflationChart />
+                    </div>
                   ) : activeBenefit === "Potentiel de croissance" ? (
-                    <GrowthChart />
+                    <div className="w-full h-[400px]">
+                      <GrowthChart />
+                    </div>
+                  ) : activeBenefit === "Adoption croissante" ? (
+                    <div className="w-full h-[400px]">
+                      <CompaniesChart />
+                    </div>
                   ) : (
                     <div className="h-[400px] flex items-center justify-center text-muted-foreground">
                       Le graphique pour {activeBenefit} sera bientôt disponible

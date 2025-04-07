@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 )
 
-export default function GrowthChart() {
+export default function CompaniesChart() {
   const options: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -39,7 +39,7 @@ export default function GrowthChart() {
       tooltip: {
         callbacks: {
           label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y.toLocaleString('fr-FR')}€`
+            return `${context.dataset.label}: ${context.parsed.y} entreprises`
           }
         }
       }
@@ -51,7 +51,7 @@ export default function GrowthChart() {
         position: "left" as const,
         title: {
           display: true,
-          text: "Capitalisation (€)",
+          text: "Nombre d'entreprises",
           font: {
             size: 12,
             weight: "bold",
@@ -66,9 +66,7 @@ export default function GrowthChart() {
           font: {
             size: 12,
           },
-          callback: function(value) {
-            return value.toLocaleString('fr-FR') + '€'
-          }
+          stepSize: 20
         },
         border: {
           display: false,
@@ -101,19 +99,13 @@ export default function GrowthChart() {
   }
 
   const data: ChartData<"bar"> = {
-    labels: [
-      "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"
-    ],
+    labels: ["2023", "2024", "2025"],
     datasets: [
       {
-        label: "Capitalisation totale de Bitcoin",
-        data: [
-          15500000000, 451400000000, 105400000000, 159500000000, 
-          530700000000, 755600000000, 300800000000, 520000000000, 
-          1726500000000
-        ],
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-        borderColor: "rgb(255, 99, 132)",
+        label: "Entreprises publiques détenant du Bitcoin",
+        data: [33, 45, 80],
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,
       },
     ],
