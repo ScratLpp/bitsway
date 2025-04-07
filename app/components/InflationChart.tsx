@@ -12,16 +12,15 @@ export default function InflationChart() {
 
   useEffect(() => {
     if (chartRef.current) {
-      // Destroy previous chart instance if it exists
       if (chartInstance.current) {
         chartInstance.current.destroy();
       }
 
       const ctx = chartRef.current.getContext('2d');
       if (ctx) {
-        const labels = ['2020', '2021', '2022', '2023', '2024', '2025'];
-        const inflationData = [1000, 930, 874, 830, 801, 777];
-        const bitcoinData = [1000, 4028, 6667, 2292, 5833, 9861];
+        const labels = ['2020', '2021', '2022', '2023', '2024'];
+        const inflationData = [1000, 930, 874, 830, 801];
+        const bitcoinData = [1000, 3417, 2292, 3152, 5960];
 
         chartInstance.current = new Chart(ctx, {
           type: 'line',
@@ -55,15 +54,32 @@ export default function InflationChart() {
                     size: 14,
                     family: "'Inter', sans-serif"
                   }
+                },
+                onClick: (e, legendItem, legend) => {
+                  const index = legendItem.datasetIndex;
+                  if (index !== undefined) {
+                    const ci = legend.chart;
+                    const meta = ci.getDatasetMeta(index);
+                    
+                    // Toggle visibility
+                    if (meta.hidden === null) {
+                      meta.hidden = !ci.data.datasets[index].hidden;
+                    } else {
+                      meta.hidden = null;
+                    }
+                    
+                    // Update chart
+                    ci.update();
+                  }
                 }
               },
               annotation: {
                 annotations: {
                   inflationValue: {
                     type: 'label',
-                    xValue: 5,
-                    yValue: 777,
-                    content: '777€',
+                    xValue: 4,
+                    yValue: 801,
+                    content: '801€',
                     position: 'end',
                     backgroundColor: 'rgba(239, 68, 68, 0.8)',
                     color: 'white',
@@ -74,13 +90,19 @@ export default function InflationChart() {
                     padding: 4,
                     borderRadius: 4,
                     xAdjust: -15,
-                    yAdjust: -15
+                    yAdjust: -15,
+                    drawTime: 'afterDatasetsDraw',
+                    display: (ctx) => {
+                      const chart = ctx.chart;
+                      const meta = chart.getDatasetMeta(0);
+                      return meta.hidden !== true;
+                    }
                   },
                   bitcoinValue: {
                     type: 'label',
-                    xValue: 5,
-                    yValue: 9861,
-                    content: '9861€',
+                    xValue: 4,
+                    yValue: 5960,
+                    content: '5960€',
                     position: 'start',
                     backgroundColor: 'rgba(34, 197, 94, 0.8)',
                     color: 'white',
@@ -91,7 +113,13 @@ export default function InflationChart() {
                     padding: 4,
                     borderRadius: 4,
                     xAdjust: -80,
-                    yAdjust: 0
+                    yAdjust: 15,
+                    drawTime: 'afterDatasetsDraw',
+                    display: (ctx) => {
+                      const chart = ctx.chart;
+                      const meta = chart.getDatasetMeta(1);
+                      return meta.hidden !== true;
+                    }
                   }
                 }
               }
@@ -127,7 +155,6 @@ export default function InflationChart() {
       }
     }
 
-    // Cleanup function
     return () => {
       if (chartInstance.current) {
         chartInstance.current.destroy();
