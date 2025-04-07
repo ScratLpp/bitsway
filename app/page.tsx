@@ -3,13 +3,14 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2 } from "lucide-react"
+import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2, ChevronDown } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { Logo } from "@/components/ui/logo"
 import InflationChart from './components/InflationChart'
+import GrowthChart from './components/GrowthChart'
 
 // Configuration du formulaire de contact avec Resend
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
     message: "",
   })
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [activeBenefit, setActiveBenefit] = useState<string>("Protection contre l'inflation")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,6 +43,31 @@ export default function Home() {
       setStatus("error")
     }
   }
+
+  const benefits = [
+    {
+      title: "Protection contre l'inflation",
+      description: "Préservez la valeur de votre trésorerie face à la dépréciation monétaire.",
+      hasChart: true,
+      chart: "inflation"
+    },
+    {
+      title: "Diversification du portefeuille",
+      description: "Réduisez les risques en diversifiant vos actifs avec une classe d'actif décorrélée.",
+      hasChart: false
+    },
+    {
+      title: "Potentiel de croissance",
+      description: "Bénéficiez du potentiel d'appréciation à long terme du Bitcoin.",
+      hasChart: true,
+      chart: "growth"
+    },
+    {
+      title: "Avantage concurrentiel",
+      description: "Positionnez votre entreprise comme innovante et tournée vers l'avenir.",
+      hasChart: false
+    }
+  ]
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -141,55 +168,54 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               <div className="space-y-3">
-                <div className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <ChevronRight className="h-5 w-5 text-primary" />
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit.title}
+                    className={`group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer ${
+                      activeBenefit === benefit.title ? 'bg-white/10 border-primary/20' : ''
+                    }`}
+                    onMouseEnter={() => setActiveBenefit(benefit.title)}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors ${
+                      activeBenefit === benefit.title ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
+                    }`}>
+                      {activeBenefit === benefit.title ? (
+                        <ChevronDown className="h-5 w-5 text-primary" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className={`text-lg font-bold mb-1 transition-colors ${
+                        activeBenefit === benefit.title ? 'text-primary' : 'group-hover:text-primary'
+                      }`}>
+                        {benefit.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {benefit.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Protection contre l'inflation</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Préservez la valeur de votre trésorerie face à la dépréciation monétaire.
-                    </p>
-                  </div>
-                </div>
-                <div className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <ChevronRight className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Diversification du portefeuille</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Réduisez les risques en diversifiant vos actifs avec une classe d'actif décorrélée.
-                    </p>
-                  </div>
-                </div>
-                <div className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <ChevronRight className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Potentiel de croissance</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Bénéficiez du potentiel d'appréciation à long terme du Bitcoin.
-                    </p>
-                  </div>
-                </div>
-                <div className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <ChevronRight className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">Avantage concurrentiel</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Positionnez votre entreprise comme innovante et tournée vers l'avenir.
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 -mt-2">
-                <h3 className="text-lg font-bold mb-4 text-center">Que deviennent 1000€ entre 2020 et 2025 ?</h3>
+                <h3 className="text-lg font-bold mb-4 text-center">
+                  {activeBenefit === "Protection contre l'inflation" 
+                    ? "Que deviennent 1000€ entre 2020 et 2024 ?"
+                    : activeBenefit === "Potentiel de croissance"
+                    ? "Évolution du prix de Bitcoin depuis 2009"
+                    : "Graphique à venir"}
+                </h3>
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <InflationChart />
+                  {activeBenefit === "Protection contre l'inflation" ? (
+                    <InflationChart />
+                  ) : activeBenefit === "Potentiel de croissance" ? (
+                    <GrowthChart />
+                  ) : (
+                    <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                      Le graphique pour {activeBenefit} sera bientôt disponible
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import { Line } from "react-chartjs-2"
 import {
@@ -13,7 +13,6 @@ import {
   ChartOptions,
   ChartData,
 } from "chart.js"
-import annotationPlugin from "chartjs-plugin-annotation"
 
 ChartJS.register(
   CategoryScale,
@@ -22,11 +21,10 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend,
-  annotationPlugin
+  Legend
 )
 
-export default function InflationChart() {
+export default function GrowthChart() {
   const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -44,44 +42,13 @@ export default function InflationChart() {
           color: "#666666",
         },
       },
-      annotation: {
-        annotations: {
-          inflationAnnotation: {
-            type: "label",
-            xValue: 4,
-            yValue: 801,
-            backgroundColor: "rgba(75, 192, 192, 0.8)",
-            content: "801€",
-            font: {
-              size: 14,
-            },
-            borderRadius: 4,
-            xAdjust: -30,
-            yAdjust: -30,
-            display: (ctx) => {
-              const meta = ctx.chart.getDatasetMeta(0)
-              return !meta.hidden
-            },
-          },
-          bitcoinAnnotation: {
-            type: "label",
-            xValue: 4,
-            yValue: 5960,
-            backgroundColor: "rgba(255, 99, 132, 0.8)",
-            content: "5960€",
-            font: {
-              size: 14,
-            },
-            borderRadius: 4,
-            xAdjust: -70,
-            yAdjust: 30,
-            display: (ctx) => {
-              const meta = ctx.chart.getDatasetMeta(1)
-              return !meta.hidden
-            },
-          },
-        },
-      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y.toLocaleString('fr-FR')}€`
+          }
+        }
+      }
     },
     scales: {
       y: {
@@ -140,18 +107,17 @@ export default function InflationChart() {
   }
 
   const data: ChartData<"line"> = {
-    labels: ["2020", "2021", "2022", "2023", "2024"],
+    labels: [
+      "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017",
+      "2018", "2019", "2020", "2021", "2022", "2023", "2024"
+    ],
     datasets: [
       {
-        label: "Pouvoir d'achat avec inflation",
-        data: [1000, 930, 874, 830, 801],
-        borderColor: "rgb(75, 192, 192)",
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        tension: 0.4,
-      },
-      {
-        label: "Valeur en Bitcoin",
-        data: [1000, 3417, 2292, 3152, 5960],
+        label: "Prix moyen annuel de Bitcoin",
+        data: [
+          0.1, 0.3, 5.3, 7.5, 770, 950, 430, 950, 14000,
+          8200, 7200, 8727, 29825, 20000, 27500, 52000
+        ],
         borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
         tension: 0.4,
