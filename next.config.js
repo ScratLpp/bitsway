@@ -37,6 +37,11 @@ const nextConfig = {
         ],
       }
     ]
+  },
+  transpilePackages: ['plotly.js-dist'],
+  webpack: (config) => {
+    config.externals = [...(config.externals || []), { 'plotly.js-dist': 'Plotly' }]
+    return config
   }
 }
 
