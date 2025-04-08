@@ -173,7 +173,7 @@ export default function Home() {
                 {benefits.map((benefit) => (
                   <div
                     key={benefit.title}
-                    className={`group flex items-start gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer ${
+                    className={`group flex items-start gap-3 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer ${
                       activeBenefit === benefit.title ? 'bg-white/10 border-primary/20' : ''
                     }`}
                     onMouseEnter={() => setActiveBenefit(benefit.title)}
@@ -200,8 +200,8 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 -mt-2">
-                <h3 className="text-lg font-bold mb-4 text-center">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl -mt-2">
+                <h3 className="text-lg font-bold mb-4 text-center pt-4 px-4">
                   {activeBenefit === "Protection contre l'inflation" 
                     ? "Que deviennent 1000€ entre 2020 et 2024 ?"
                     : activeBenefit === "Potentiel de croissance"
@@ -210,7 +210,7 @@ export default function Home() {
                     ? "Évolution du nombre d'entreprises publiques détenant du Bitcoin"
                     : "Graphique à venir"}
                 </h3>
-                <div className="border border-gray-200 rounded-lg p-4">
+                <div className="border border-gray-200 rounded-lg pb-4 pt-4 px-4">
                   {activeBenefit === "Protection contre l'inflation" ? (
                     <div className="w-full h-[400px]">
                       <InflationChart />
