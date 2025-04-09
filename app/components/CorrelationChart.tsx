@@ -10,8 +10,18 @@ declare global {
   }
 }
 
+// Chargement différé de Plotly
+const loadPlotly = async () => {
+  if (typeof window !== 'undefined' && !window.Plotly) {
+    // Utilisation de la version basic de Plotly qui est plus légère
+    const Plotly = await import('plotly.js-dist-min');
+    window.Plotly = Plotly.default;
+  }
+  return window.Plotly;
+};
+
 // Fonction pour créer le graphique
-const createPlot = (container: HTMLElement) => {
+const createPlot = async (container: HTMLElement) => {
   const correlationData = [
     [1.0, 0.2, -0.1, -0.2, -0.3],
     [0.2, 1.0, 0.3, 0.2, 0.1],
@@ -80,7 +90,8 @@ const createPlot = (container: HTMLElement) => {
     responsive: true
   };
 
-  return window.Plotly.newPlot(container, data, layout, config);
+  const Plotly = await loadPlotly();
+  return Plotly.newPlot(container, data, layout, config);
 };
 
 const CorrelationChart = () => {
@@ -89,29 +100,11 @@ const CorrelationChart = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const checkPlotlyAndCreate = () => {
-      if (window.Plotly) {
-        createPlot(containerRef.current!);
-        return true;
-      }
-      return false;
-    };
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            if (!checkPlotlyAndCreate()) {
-              // Si Plotly n'est pas encore chargé, on vérifie toutes les 100ms
-              const interval = setInterval(() => {
-                if (checkPlotlyAndCreate()) {
-                  clearInterval(interval);
-                }
-              }, 100);
-
-              // On arrête de vérifier après 5 secondes pour éviter une boucle infinie
-              setTimeout(() => clearInterval(interval), 5000);
-            }
+            createPlot(containerRef.current!);
             observer.disconnect();
           }
         });
