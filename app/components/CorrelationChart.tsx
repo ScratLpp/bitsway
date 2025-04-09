@@ -96,14 +96,14 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
 
   // Gérer le chargement initial de Plotly via un script
   useEffect(() => {
-    // Vérifie si Plotly est déjà chargé
+    // Check if Plotly is already loaded
     if ((window as any).Plotly) {
       setPlotlyLoaded(true);
       initPlotly();
       return;
     }
 
-    // Créer et ajouter le script si nécessaire
+    // Create and add the script if necessary
     if (!plotlyScript && !document.querySelector('script[src*="plotly"]')) {
       const script = document.createElement('script');
       script.src = 'https://cdn.plot.ly/plotly-2.27.1.min.js';
@@ -118,7 +118,7 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
     }
 
     return () => {
-      // Ne pas supprimer le script pour permettre le rechargement
+      // Do not remove the script to allow reloading
     };
   }, []);
 

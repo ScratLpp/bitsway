@@ -99,7 +99,7 @@ export default function CompaniesChart() {
   }
 
   const data: ChartData<"bar"> = {
-    labels: ["2023", "Janvier 2024", "2025"],
+    labels: ["2023", "2024", "2025"],
     datasets: [
       {
         label: "Entreprises publiques détenant du Bitcoin",
