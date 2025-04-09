@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from '@vercel/analytics/react';
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next";
-import PlotlyPreloader from "@/app/components/PlotlyPreloader";
+import PlotlyPreloader from "@/components/PlotlyPreloader";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export default function RootLayout({
         <PlotlyPreloader />
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           {children}
           <Analytics />
         </ThemeProvider>

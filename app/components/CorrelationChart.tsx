@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 
 // Déclaration du type pour Plotly
 declare global {
@@ -77,25 +78,32 @@ const createPlot = (container: HTMLElement) => {
 
 const CorrelationChart = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isPlotlyReady, setIsPlotlyReady] = useState(false);
 
-  // Vérifier si Plotly est déjà chargé
   useEffect(() => {
-    const checkPlotly = () => {
-      if (window.Plotly) {
-        setIsPlotlyReady(true);
-        return;
+    if (!containerRef.current || !window.Plotly) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && window.Plotly) {
+            createPlot(containerRef.current!);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.disconnect();
       }
-      setTimeout(checkPlotly, 50); // Vérifier toutes les 50ms
     };
-    checkPlotly();
   }, []);
-
-  // Créer le graphique dès que Plotly est prêt
-  useEffect(() => {
-    if (!isPlotlyReady || !containerRef.current) return;
-    createPlot(containerRef.current);
-  }, [isPlotlyReady]);
 
   return (
     <div className="w-full h-[400px]">
