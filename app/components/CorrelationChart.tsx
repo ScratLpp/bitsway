@@ -50,9 +50,16 @@ const createPlot = (container: HTMLElement) => {
         size: 16,
         color: '#666666'
       },
-      y: 0.95
+      y: 1.1,
+      pad: { t: 0, b: 0 }
     },
-    margin: { t: 50, l: 80, r: 30, b: 80 },
+    margin: { 
+      t: 30,
+      l: 70,
+      r: 10,
+      b: 50,
+      pad: 0
+    },
     xaxis: {
       side: 'bottom',
       tickfont: {
@@ -106,7 +113,7 @@ const CorrelationChart = () => {
   }, []);
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-[400px] px-0 sm:px-4">
       <div ref={containerRef} className="w-full h-full" />
     </div>
   );
