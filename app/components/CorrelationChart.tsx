@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
-import Script from 'next/script'
 
 // Fonction pour créer le graphique
 const createPlot = (container: HTMLDivElement) => {
