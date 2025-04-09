@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Script from 'next/script'
 
 // Désactiver le SSR pour ce composant
 const CorrelationChart = dynamic(() => Promise.resolve(() => {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const [isPlotlyLoaded, setIsPlotlyLoaded] = useState(false)
 
   useEffect(() => {
     let plot: any = null
@@ -73,8 +74,8 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
       responsive: true
     }
 
-    // Utiliser window.Plotly au lieu d'importer plotly.js-dist
-    if (containerRef.current && (window as any).Plotly) {
+    // Créer le graphique une fois que Plotly est chargé
+    if (containerRef.current && isPlotlyLoaded && (window as any).Plotly) {
       plot = (window as any).Plotly.newPlot(containerRef.current, data, layout, config)
     }
 
@@ -83,13 +84,18 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
         (window as any).Plotly.purge(containerRef.current)
       }
     }
-  }, [])
+  }, [isPlotlyLoaded])
+
+  const handlePlotlyLoad = () => {
+    setIsPlotlyLoaded(true)
+  }
 
   return (
     <>
       <Script 
         src="https://cdn.plot.ly/plotly-2.27.1.min.js" 
         strategy="afterInteractive"
+        onLoad={handlePlotlyLoad}
       />
       <div ref={containerRef} className="w-full h-[400px]" />
     </>
