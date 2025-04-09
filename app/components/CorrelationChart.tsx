@@ -3,6 +3,19 @@
 import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 
+// Déclaration du type pour Plotly
+declare global {
+  interface Window {
+    Plotly: any;
+  }
+}
+
+interface MatrixItem {
+  x: number;
+  y: number;
+  value: number;
+}
+
 // Fonction pour créer le graphique
 const createPlot = (container: HTMLDivElement) => {
   if (!container || typeof window === 'undefined' || !(window as any).Plotly) return null;
@@ -18,58 +31,84 @@ const createPlot = (container: HTMLDivElement) => {
 
   const assets = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40']
 
-  const data: any = [{
-    z: correlationData,
-    x: assets,
-    y: assets,
-    type: 'heatmap',
-    colorscale: [
-      [0, 'rgb(250, 220, 200)'],
-      [0.2, 'rgb(245, 160, 130)'],
-      [0.4, 'rgb(235, 110, 100)'],
-      [0.6, 'rgb(220, 70, 80)'],
-      [0.8, 'rgb(200, 30, 60)'],
-      [1, 'rgb(180, 0, 39)']
-    ],
-    showscale: true,
-    text: correlationData.map(row => row.map(value => value.toFixed(2))),
-    texttemplate: '%{text}',
-    textfont: { color: 'white', size: 12, family: 'Arial, sans-serif' },
-    hoverongaps: false,
-    hovertemplate: '%{y} vs %{x}: %{z:.2f}<extra></extra>'
-  }]
+  const data: MatrixItem[] = [
+    { x: 0, y: 0, value: 1.0 },
+    { x: 1, y: 0, value: 0.2 },
+    { x: 2, y: 0, value: -0.1 },
+    { x: 0, y: 1, value: 0.2 },
+    { x: 1, y: 1, value: 1.0 },
+    { x: 2, y: 1, value: 0.3 },
+    { x: 0, y: 2, value: -0.1 },
+    { x: 1, y: 2, value: 0.3 },
+    { x: 2, y: 2, value: 1.0 }
+  ];
 
-  const layout: any = {
+  const xLabels = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40'];
+  const yLabels = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40'];
+
+  const trace = {
+    type: 'heatmap' as const,
+    x: data.map(item => xLabels[item.x]),
+    y: data.map(item => yLabels[item.y]),
+    z: data.map(item => item.value),
+    colorscale: [
+      [0, 'rgb(255, 0, 0)'],
+      [0.5, 'rgb(255, 255, 255)'],
+      [1, 'rgb(0, 128, 0)']
+    ],
+    zmin: -1,
+    zmax: 1,
+    showscale: true,
+    colorbar: {
+      title: 'Corrélation',
+      titleside: 'right',
+      titlefont: {
+        size: 14,
+        family: 'Arial, sans-serif'
+      }
+    }
+  };
+
+  const layout = {
     title: {
-      text: 'Heatmap de corrélation entre actifs',
+      text: 'Matrice de Corrélation',
       font: {
-        size: 16,
-        color: '#666666'
-      },
-      y: 0.95
+        size: 20,
+        family: 'Arial, sans-serif'
+      }
     },
-    margin: { t: 50, l: 80, r: 30, b: 80 },
     xaxis: {
-      side: 'bottom',
-      tickfont: {
-        size: 12,
-        color: '#666666'
+      title: 'Actifs',
+      titlefont: {
+        size: 14,
+        family: 'Arial, sans-serif'
       }
     },
     yaxis: {
-      tickfont: {
-        size: 12,
-        color: '#666666'
+      title: 'Actifs',
+      titlefont: {
+        size: 14,
+        family: 'Arial, sans-serif'
       }
-    }
-  }
+    },
+    annotations: data.map(item => ({
+      x: xLabels[item.x],
+      y: yLabels[item.y],
+      text: item.value.toFixed(2),
+      font: {
+        size: 14,
+        color: 'black'
+      },
+      showarrow: false
+    }))
+  };
 
-  const config: any = {
-    displayModeBar: false,
-    responsive: true
-  }
+  const config = {
+    responsive: true,
+    displayModeBar: false
+  };
 
-  return (window as any).Plotly.newPlot(container, data, layout, config);
+  return (window as any).Plotly.newPlot(container, [trace], layout, config);
 }
 
 // Désactiver le SSR pour ce composant
@@ -78,39 +117,21 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
   const [plotlyLoaded, setPlotlyLoaded] = useState(false)
   const [plotlyScript, setPlotlyScript] = useState<HTMLScriptElement | null>(null)
   
-  // Fonction pour initialiser Plotly et créer le graphique
-  const initPlotly = () => {
-    if (containerRef.current && (window as any).Plotly) {
-      // Nettoyer tout graphique précédent
-      try {
-        (window as any).Plotly.purge(containerRef.current);
-      } catch (e) {
-        // Ignorer les erreurs de nettoyage
-      }
-      
-      // Créer le nouveau graphique
-      createPlot(containerRef.current);
-      setPlotlyLoaded(true);
-    }
-  }
-
-  // Gérer le chargement initial de Plotly via un script
+  // Précharger Plotly.js dès le montage du composant
   useEffect(() => {
-    // Check if Plotly is already loaded
-    if ((window as any).Plotly) {
+    // Vérifier si Plotly est déjà chargé
+    if (window.Plotly) {
       setPlotlyLoaded(true);
-      initPlotly();
       return;
     }
 
-    // Create and add the script if necessary
+    // Créer et ajouter le script si nécessaire
     if (!plotlyScript && !document.querySelector('script[src*="plotly"]')) {
       const script = document.createElement('script');
       script.src = 'https://cdn.plot.ly/plotly-2.27.1.min.js';
       script.async = true;
       script.onload = () => {
         setPlotlyLoaded(true);
-        initPlotly();
       };
       
       document.head.appendChild(script);
@@ -118,49 +139,15 @@ const CorrelationChart = dynamic(() => Promise.resolve(() => {
     }
 
     return () => {
-      // Do not remove the script to allow reloading
+      // Ne pas supprimer le script pour permettre le rechargement
     };
   }, []);
 
-  // Effet pour créer/redessiner le graphique lorsque Plotly est chargé ou le conteneur change
+  // Initialiser le graphique une fois que Plotly est chargé
   useEffect(() => {
-    if (plotlyLoaded && containerRef.current) {
-      initPlotly();
-    }
+    if (!plotlyLoaded || !containerRef.current) return;
 
-    return () => {
-      if (containerRef.current && (window as any).Plotly) {
-        try {
-          (window as any).Plotly.purge(containerRef.current);
-        } catch (e) {
-          // Ignorer les erreurs de nettoyage
-        }
-      }
-    };
-  }, [plotlyLoaded, containerRef.current]);
-
-  // Effet pour dessiner le graphique lorsque le composant devient visible
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && plotlyLoaded && containerRef.current) {
-            initPlotly();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
-    };
+    createPlot(containerRef.current);
   }, [plotlyLoaded]);
 
   return (
