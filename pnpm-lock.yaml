@@ -131,6 +131,9 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      plotly.js-dist:
+        specifier: ^3.0.1
+        version: 3.0.1
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -180,6 +183,9 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.13.17
+      '@types/plotly.js':
+        specifier: ^2.35.4
+        version: 2.35.4
       '@types/react':
         specifier: ^18
         version: 18.3.20
@@ -1114,6 +1120,9 @@ packages:
   '@types/node@22.13.17':
     resolution: {integrity: sha512-nAJuQXoyPj04uLgu+obZcSmsfOenUg6DxPKogeUy6yNCFwWaj5sBF8/G/pNo8EtBJjAfSVgfIlugR/BCOleO+g==}
 
+  '@types/plotly.js@2.35.4':
+    resolution: {integrity: sha512-A8d3r8I2vIsaMRJ+0ZLvzW98l4vDu5AuLAWwtWSF61ekqUj3q6Hu0w6RQk+S1fumu7A3Fji+aodta4F9+8BMuA==}
+
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
 
@@ -1700,6 +1709,9 @@ packages:
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+
+  plotly.js-dist@3.0.1:
+    resolution: {integrity: sha512-/LvKEGxWime7KPzO6nlnfNyTt/pHn4Ctlgj98RUJyjUIu3IHowOqSu+tRq3B/xQ6GZWj5uDz2hS+eEBsgg/xHw==}
 
   postcss-import@15.1.0:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
@@ -3011,6 +3023,8 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/plotly.js@2.35.4': {}
+
   '@types/prop-types@15.7.14': {}
 
   '@types/react-dom@18.3.6(@types/react@18.3.20)':
@@ -3547,6 +3561,8 @@ snapshots:
   pify@2.3.0: {}
 
   pirates@4.0.7: {}
+
+  plotly.js-dist@3.0.1: {}
 
   postcss-import@15.1.0(postcss@8.5.3):
     dependencies:
