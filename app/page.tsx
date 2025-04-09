@@ -208,11 +208,8 @@ export default function Home() {
                     height={400}
                     className="w-full h-auto rounded-2xl"
                     priority
-                    loading="eager"
-                    quality={75}
-                    sizes="(max-width: 640px) 90vw, (max-width: 768px) 80vw, (max-width: 1200px) 40vw, 400px"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkLzYvLy82NDY0NjQ2NDY2NjY2Njk2Njo6Ojo6Ojo6Ojo6Ojo6Ojr/2wBDAR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 400px"
                   />
                 </div>
               </div>
@@ -585,66 +582,6 @@ export default function Home() {
             <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 -z-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
-          </div>
-          <div className="container px-4 md:px-6 relative z-20">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
-                Témoignages
-              </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
-                Ce que disent nos clients
-              </h2>
-              <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
-                Découvrez les expériences de nos clients qui ont fait confiance à Bitsway pour la gestion de leur trésorerie.
-              </p>
-            </div>
-            <div className="grid gap-8 md:grid-cols-2">
-              <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">JD</span>
-                    </div>
-                    <div>
-                      <CardTitle>Jean Dupont</CardTitle>
-                      <CardDescription>Directeur Financier, TechCorp</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    "Bitsway nous a accompagnés dans l'intégration de Bitcoin dans notre trésorerie. Leur expertise et leur approche professionnelle ont rendu le processus simple et transparent. Nous sommes très satisfaits des résultats."
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">ML</span>
-                    </div>
-                    <div>
-                      <CardTitle>Marie Laurent</CardTitle>
-                      <CardDescription>CEO, InnovStart</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    "La diversification de notre trésorerie avec Bitcoin a été une décision stratégique. Bitsway nous a guidés à chaque étape, avec une expertise remarquable et un service client exceptionnel."
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-16 lg:py-20 relative overflow-hidden bg-white">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95 z-10" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-primary/10 to-transparent opacity-50 z-0" />
-            <div className="absolute inset-0 bg-grid-black/[0.02] z-0" />
           </div>
           <div className="container px-4 md:px-6 relative z-20">
             <div className="text-center mb-6">
