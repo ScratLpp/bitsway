@@ -87,13 +87,31 @@ const CorrelationChart = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || !window.Plotly) return;
+    if (!containerRef.current) return;
+
+    const checkPlotlyAndCreate = () => {
+      if (window.Plotly) {
+        createPlot(containerRef.current!);
+        return true;
+      }
+      return false;
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && window.Plotly) {
-            createPlot(containerRef.current!);
+          if (entry.isIntersecting) {
+            if (!checkPlotlyAndCreate()) {
+              // Si Plotly n'est pas encore chargé, on vérifie toutes les 100ms
+              const interval = setInterval(() => {
+                if (checkPlotlyAndCreate()) {
+                  clearInterval(interval);
+                }
+              }, 100);
+
+              // On arrête de vérifier après 5 secondes pour éviter une boucle infinie
+              setTimeout(() => clearInterval(interval), 5000);
+            }
             observer.disconnect();
           }
         });
@@ -101,14 +119,10 @@ const CorrelationChart = () => {
       { threshold: 0.1 }
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    observer.observe(containerRef.current);
 
     return () => {
-      if (containerRef.current) {
-        observer.disconnect();
-      }
+      observer.disconnect();
     };
   }, []);
 

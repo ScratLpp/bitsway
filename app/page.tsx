@@ -3,11 +3,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2, ChevronDown, Linkedin } from "lucide-react"
+import { ArrowRight, BarChart3, ChevronRight, Lock, PieChart, Shield, TrendingUp, Globe, Users, Lightbulb, Target, GraduationCap, Headphones, BookOpen, Calculator, Mail, Phone, MapPin, Calendar, CheckCircle2, ChevronDown } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Logo } from "@/components/ui/logo"
 import InflationChart from './components/InflationChart'
 import GrowthChart from './components/GrowthChart'
@@ -23,6 +23,70 @@ export default function Home() {
   })
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [activeBenefit, setActiveBenefit] = useState<string>("Protection contre l'inflation")
+  const [collapsedBenefits, setCollapsedBenefits] = useState<Set<string>>(new Set())
+  const [isMobile, setIsMobile] = useState(false)
+  const graphRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const benefitRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  const handleBenefitInteraction = (title: string, isClick: boolean) => {
+    if (isMobile && isClick) {
+      setCollapsedBenefits(prev => {
+        const newSet = new Set(prev)
+        if (newSet.has(title)) {
+          newSet.delete(title)
+        } else {
+          newSet.add(title)
+        }
+        return newSet
+      })
+    }
+    setActiveBenefit(title)
+  }
+
+  // Fonction pour gérer le défilement vers le graphique actif
+  const scrollToActiveGraph = (title: string) => {
+    if (window.innerWidth < 1024) { // Seulement sur mobile/tablet
+      setTimeout(() => {
+        const graphElement = graphRefs.current[title]
+        if (graphElement) {
+          graphElement.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'nearest'
+          })
+        }
+      }, 100) // Petit délai pour laisser le temps au graphique de s'afficher
+    }
+  }
+
+  // Fonction pour gérer le défilement vers le titre actif
+  const scrollToActiveBenefit = (title: string) => {
+    if (window.innerWidth < 1024) { // Seulement sur mobile/tablet
+      setTimeout(() => {
+        const benefitElement = benefitRefs.current[title]
+        if (benefitElement) {
+          const headerOffset = 80 // Hauteur approximative du header
+          const elementPosition = benefitElement.getBoundingClientRect().top
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          })
+        }
+      }, 100)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -171,38 +235,90 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {benefits.map((benefit) => (
-                  <div
-                    key={benefit.title}
-                    className={`group flex items-start gap-3 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer ${
-                      activeBenefit === benefit.title ? 'bg-white/10 border-primary/20' : ''
-                    }`}
-                    onMouseEnter={() => setActiveBenefit(benefit.title)}
-                  >
-                    <div className={`p-2 rounded-lg transition-colors ${
-                      activeBenefit === benefit.title ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
-                    }`}>
-                      {activeBenefit === benefit.title ? (
-                        <ChevronDown className="h-5 w-5 text-primary" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                    <div>
-                      <h3 className={`text-lg font-bold mb-1 transition-colors ${
-                        activeBenefit === benefit.title ? 'text-primary' : 'group-hover:text-primary'
+                  <div key={benefit.title} className="space-y-4">
+                    <div
+                      className={`group flex items-start gap-3 py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer ${
+                        activeBenefit === benefit.title ? 'bg-white/10 border-primary/20' : ''
+                      }`}
+                      onClick={() => handleBenefitInteraction(benefit.title, true)}
+                      onMouseEnter={() => handleBenefitInteraction(benefit.title, false)}
+                    >
+                      <div className={`p-2 rounded-lg transition-colors ${
+                        activeBenefit === benefit.title ? 'bg-primary/20' : 'bg-primary/10 group-hover:bg-primary/20'
                       }`}>
-                        {benefit.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm">
-                        {benefit.description}
-                      </p>
+                        {(!collapsedBenefits.has(benefit.title) && isMobile) || 
+                         (activeBenefit === benefit.title && !isMobile) ? (
+                          <ChevronDown className="h-5 w-5 text-primary" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5 text-primary" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className={`text-lg font-bold mb-1 transition-colors ${
+                          activeBenefit === benefit.title ? 'text-primary' : 'group-hover:text-primary'
+                        }`}>
+                          {benefit.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                          {benefit.description}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Graphique sur mobile uniquement */}
+                    <div className="lg:hidden">
+                      {!collapsedBenefits.has(benefit.title) && (
+                        <div 
+                          className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl"
+                          ref={(el) => {
+                            if (el) {
+                              graphRefs.current[benefit.title] = el
+                            }
+                          }}
+                        >
+                          <h3 className="text-lg font-bold mb-4 text-center pt-4 px-4">
+                            {benefit.title === "Protection contre l'inflation" 
+                              ? "Que deviennent 1000€ entre 2020 et 2024 ?"
+                              : benefit.title === "Potentiel de croissance"
+                              ? "Évolution de la capitalisation de Bitcoin depuis 2016"
+                              : benefit.title === "Adoption croissante"
+                              ? "Évolution du nombre d'entreprises publiques détenant du Bitcoin"
+                              : benefit.title === "Diversification du portefeuille"
+                              ? "Corrélation de Bitcoin avec les actifs traditionnels"
+                              : "Graphique à venir"}
+                          </h3>
+                          <div className="border border-gray-200 rounded-lg pb-4 pt-4 px-4">
+                            {benefit.title === "Protection contre l'inflation" ? (
+                              <div className="w-full h-[400px]">
+                                <InflationChart />
+                              </div>
+                            ) : benefit.title === "Potentiel de croissance" ? (
+                              <div className="w-full h-[400px]">
+                                <GrowthChart />
+                              </div>
+                            ) : benefit.title === "Adoption croissante" ? (
+                              <div className="w-full h-[400px]">
+                                <CompaniesChart />
+                              </div>
+                            ) : benefit.title === "Diversification du portefeuille" ? (
+                              <div className="w-full h-[400px]">
+                                <CorrelationChart />
+                              </div>
+                            ) : (
+                              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                                Le graphique pour {benefit.title} sera bientôt disponible
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl -mt-2">
+              {/* Graphique sur desktop uniquement */}
+              <div className="hidden lg:block bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl -mt-2">
                 <h3 className="text-lg font-bold mb-4 text-center pt-4 px-4">
                   {activeBenefit === "Protection contre l'inflation" 
                     ? "Que deviennent 1000€ entre 2020 et 2024 ?"
@@ -215,12 +331,27 @@ export default function Home() {
                     : "Graphique à venir"}
                 </h3>
                 <div className="border border-gray-200 rounded-lg pb-4 pt-4 px-4">
-                  <div className="w-full h-[400px]">
-                    {activeBenefit === "Protection contre l'inflation" && <InflationChart />}
-                    {activeBenefit === "Diversification du portefeuille" && <CorrelationChart />}
-                    {activeBenefit === "Potentiel de croissance" && <GrowthChart />}
-                    {activeBenefit === "Adoption croissante" && <CompaniesChart />}
-                  </div>
+                  {activeBenefit === "Protection contre l'inflation" ? (
+                    <div className="w-full h-[400px]">
+                      <InflationChart />
+                    </div>
+                  ) : activeBenefit === "Potentiel de croissance" ? (
+                    <div className="w-full h-[400px]">
+                      <GrowthChart />
+                    </div>
+                  ) : activeBenefit === "Adoption croissante" ? (
+                    <div className="w-full h-[400px]">
+                      <CompaniesChart />
+                    </div>
+                  ) : activeBenefit === "Diversification du portefeuille" ? (
+                    <div className="w-full h-[400px]">
+                      <CorrelationChart />
+                    </div>
+                  ) : (
+                    <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                      Le graphique pour {activeBenefit} sera bientôt disponible
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -568,29 +699,24 @@ export default function Home() {
                       <p className="text-sm text-white/80">Planifier une consultation</p>
                     </div>
                   </Link>
-                  <a 
-                    href="https://www.linkedin.com/company/bitsway/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <Link 
+                    href="https://www.linkedin.com/company/bitsway"
+                    target="_blank"
                     className="flex items-center gap-4 group"
                   >
                     <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="#2867B2"
-                        className="h-6 w-6 object-contain"
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        className="h-6 w-6 fill-[#0A66C2]"
                       >
                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                       </svg>
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">LinkedIn</h3>
-                      <p className="text-sm text-white/80">Suivez notre actualité</p>
+                      <p className="text-sm text-white/80">Suivez-nous sur LinkedIn</p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="relative">
