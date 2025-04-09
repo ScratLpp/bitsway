@@ -28,6 +28,13 @@ export default function Home() {
   const graphRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const benefitRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -189,10 +196,13 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
-                    <Link href="#services">
+                  <Button 
+                    size="lg"
+                    onClick={() => scrollToSection('services')}
+                  >
+                    <div className="flex items-center">
                       Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
+                    </div>
                   </Button>
                   <Button size="lg" variant="outline">
                     En savoir plus
