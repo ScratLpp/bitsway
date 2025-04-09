@@ -198,11 +198,15 @@ export default function Home() {
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button 
                     size="lg"
-                    onClick={() => scrollToSection('services')}
+                    onClick={() => {
+                      const servicesSection = document.getElementById('services')
+                      if (servicesSection) {
+                        servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                    }}
+                    className="flex items-center"
                   >
-                    <div className="flex items-center">
-                      Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
-                    </div>
+                    Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline">
                     En savoir plus
