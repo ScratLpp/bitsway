@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
 
 // Déclaration du type pour Plotly
 declare global {
@@ -10,149 +9,99 @@ declare global {
   }
 }
 
-interface MatrixItem {
-  x: number;
-  y: number;
-  value: number;
-}
-
 // Fonction pour créer le graphique
-const createPlot = (container: HTMLDivElement) => {
-  if (!container || typeof window === 'undefined' || !(window as any).Plotly) return null;
-
-  // Données de corrélation pour la heatmap
+const createPlot = (container: HTMLElement) => {
   const correlationData = [
-    [1.00, 0.10, 0.25, 0.35, 0.20], // Bitcoin vs autres
-    [0.10, 1.00, 0.15, 0.10, 0.05], // Or vs autres
-    [0.25, 0.15, 1.00, 0.85, 0.70], // S&P 500 vs autres
-    [0.35, 0.10, 0.85, 1.00, 0.60], // Nasdaq vs autres
-    [0.20, 0.05, 0.70, 0.60, 1.00]  // CAC 40 vs autres
-  ]
-
-  const assets = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40']
-
-  const data: MatrixItem[] = [
-    { x: 0, y: 0, value: 1.0 },
-    { x: 1, y: 0, value: 0.2 },
-    { x: 2, y: 0, value: -0.1 },
-    { x: 0, y: 1, value: 0.2 },
-    { x: 1, y: 1, value: 1.0 },
-    { x: 2, y: 1, value: 0.3 },
-    { x: 0, y: 2, value: -0.1 },
-    { x: 1, y: 2, value: 0.3 },
-    { x: 2, y: 2, value: 1.0 }
+    [1.0, 0.2, -0.1, -0.2, -0.3],
+    [0.2, 1.0, 0.3, 0.2, 0.1],
+    [-0.1, 0.3, 1.0, 0.8, 0.7],
+    [-0.2, 0.2, 0.8, 1.0, 0.9],
+    [-0.3, 0.1, 0.7, 0.9, 1.0]
   ];
 
-  const xLabels = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40'];
-  const yLabels = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40'];
+  const assets = ['Bitcoin', 'Or', 'S&P 500', 'Nasdaq', 'CAC 40'];
 
-  const trace = {
-    type: 'heatmap' as const,
-    x: data.map(item => xLabels[item.x]),
-    y: data.map(item => yLabels[item.y]),
-    z: data.map(item => item.value),
+  const data: any = [{
+    z: correlationData,
+    x: assets,
+    y: assets,
+    type: 'heatmap',
     colorscale: [
-      [0, 'rgb(255, 0, 0)'],
-      [0.5, 'rgb(255, 255, 255)'],
-      [1, 'rgb(0, 128, 0)']
+      [0, 'rgb(250, 220, 200)'],
+      [0.2, 'rgb(245, 160, 130)'],
+      [0.4, 'rgb(235, 110, 100)'],
+      [0.6, 'rgb(220, 70, 80)'],
+      [0.8, 'rgb(200, 30, 60)'],
+      [1, 'rgb(180, 0, 39)']
     ],
-    zmin: -1,
-    zmax: 1,
     showscale: true,
-    colorbar: {
-      title: 'Corrélation',
-      titleside: 'right',
-      titlefont: {
-        size: 14,
-        family: 'Arial, sans-serif'
-      }
-    }
-  };
+    text: correlationData.map(row => row.map(value => value.toFixed(2))),
+    texttemplate: '%{text}',
+    textfont: { color: 'white', size: 12, family: 'Arial, sans-serif' },
+    hoverongaps: false,
+    hovertemplate: '%{y} vs %{x}: %{z:.2f}<extra></extra>'
+  }];
 
-  const layout = {
+  const layout: any = {
     title: {
-      text: 'Matrice de Corrélation',
+      text: 'Heatmap de corrélation entre actifs',
       font: {
-        size: 20,
-        family: 'Arial, sans-serif'
-      }
+        size: 16,
+        color: '#666666'
+      },
+      y: 0.95
     },
+    margin: { t: 50, l: 80, r: 30, b: 80 },
     xaxis: {
-      title: 'Actifs',
-      titlefont: {
-        size: 14,
-        family: 'Arial, sans-serif'
+      side: 'bottom',
+      tickfont: {
+        size: 12,
+        color: '#666666'
       }
     },
     yaxis: {
-      title: 'Actifs',
-      titlefont: {
-        size: 14,
-        family: 'Arial, sans-serif'
+      tickfont: {
+        size: 12,
+        color: '#666666'
       }
-    },
-    annotations: data.map(item => ({
-      x: xLabels[item.x],
-      y: yLabels[item.y],
-      text: item.value.toFixed(2),
-      font: {
-        size: 14,
-        color: 'black'
-      },
-      showarrow: false
-    }))
+    }
   };
 
-  const config = {
-    responsive: true,
-    displayModeBar: false
+  const config: any = {
+    displayModeBar: false,
+    responsive: true
   };
 
-  return (window as any).Plotly.newPlot(container, [trace], layout, config);
-}
+  return window.Plotly.newPlot(container, data, layout, config);
+};
 
-// Désactiver le SSR pour ce composant
-const CorrelationChart = dynamic(() => Promise.resolve(() => {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [plotlyLoaded, setPlotlyLoaded] = useState(false)
-  const [plotlyScript, setPlotlyScript] = useState<HTMLScriptElement | null>(null)
-  
-  // Précharger Plotly.js dès le montage du composant
+const CorrelationChart = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isPlotlyReady, setIsPlotlyReady] = useState(false);
+
+  // Vérifier si Plotly est déjà chargé
   useEffect(() => {
-    // Vérifier si Plotly est déjà chargé
-    if (window.Plotly) {
-      setPlotlyLoaded(true);
-      return;
-    }
-
-    // Créer et ajouter le script si nécessaire
-    if (!plotlyScript && !document.querySelector('script[src*="plotly"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.plot.ly/plotly-2.27.1.min.js';
-      script.async = true;
-      script.onload = () => {
-        setPlotlyLoaded(true);
-      };
-      
-      document.head.appendChild(script);
-      setPlotlyScript(script);
-    }
-
-    return () => {
-      // Ne pas supprimer le script pour permettre le rechargement
+    const checkPlotly = () => {
+      if (window.Plotly) {
+        setIsPlotlyReady(true);
+        return;
+      }
+      setTimeout(checkPlotly, 50); // Vérifier toutes les 50ms
     };
+    checkPlotly();
   }, []);
 
-  // Initialiser le graphique une fois que Plotly est chargé
+  // Créer le graphique dès que Plotly est prêt
   useEffect(() => {
-    if (!plotlyLoaded || !containerRef.current) return;
-
+    if (!isPlotlyReady || !containerRef.current) return;
     createPlot(containerRef.current);
-  }, [plotlyLoaded]);
+  }, [isPlotlyReady]);
 
   return (
-    <div ref={containerRef} className="w-full h-[400px]" />
+    <div className="w-full h-[400px]">
+      <div ref={containerRef} className="w-full h-full" />
+    </div>
   );
-}), { ssr: false });
+};
 
 export default CorrelationChart 

@@ -4,6 +4,8 @@ import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from '@vercel/analytics/react';
 import { cn } from "@/lib/utils"
+import type { Metadata } from "next";
+import PlotlyPreloader from "@/app/components/PlotlyPreloader";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -11,10 +13,9 @@ const inter = Inter({
   preload: true
 })
 
-export const metadata = {
-  title: "Bitsway - Protection et optimisation de trésorerie avec Bitcoin",
-  description:
-    "Nous accompagnons les entreprises dans la gestion de leur capital en proposant des solutions adaptées pour investir une partie de leur trésorerie en Bitcoin.",
+export const metadata: Metadata = {
+  title: "Bitsway - Gestion de Trésorerie Bitcoin",
+  description: "Accompagnement des entreprises dans l'intégration de Bitcoin dans leur trésorerie",
   generator: 'v0.dev',
 }
 
@@ -34,9 +35,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <PlotlyPreloader />
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange>
           {children}
           <Analytics />
         </ThemeProvider>
