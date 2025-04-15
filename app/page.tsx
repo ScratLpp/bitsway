@@ -28,13 +28,6 @@ export default function Home() {
   const graphRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const benefitRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -120,7 +113,7 @@ export default function Home() {
   const benefits = [
     {
       title: "Protection contre l'inflation",
-      description: "Préservez la valeur de votre trésorerie face à la dépréciation monétaire.",
+      description: "Préservez votre pouvoir d'achat face à l'inflation et la dépréciation monétaire.",
       hasChart: true,
       chart: "inflation"
     },
@@ -138,7 +131,7 @@ export default function Home() {
     },
     {
       title: "Adoption croissante",
-      description: "Rejoignez le mouvement des entreprises qui intègrent Bitcoin dans leur trésorerie.",
+      description: "Rejoignez le mouvement des investisseurs qui intègrent Bitcoin dans leur portefeuille.",
       hasChart: true,
       chart: "companies"
     }
@@ -185,28 +178,20 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
-                    Nouvelle ère de la trésorerie
+                    Conseil en investissement crypto
                   </div>
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
-                    Protégez et optimisez votre trésorerie avec Bitcoin
+                    Optimisez vos investissements en cryptomonnaies
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Nous accompagnons les entreprises dans la gestion de leur capital en intégrant Bitcoin comme actif
-                    stratégique.
+                    Nous vous accompagnons dans vos stratégies d'investissement avec des analyses de marché et des signaux d'achat-vente personnalisés.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button 
-                    size="lg"
-                    onClick={() => {
-                      const servicesSection = document.getElementById('services')
-                      if (servicesSection) {
-                        servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }
-                    }}
-                    className="flex items-center"
-                  >
-                    Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button asChild size="lg">
+                    <Link href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card" target="_blank">
+                      Découvrir nos solutions <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                   <Button size="lg" variant="outline">
                     En savoir plus
@@ -241,11 +226,11 @@ export default function Home() {
               <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
                 Avantages
               </div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
-                Pourquoi intégrer Bitcoin dans votre trésorerie ?
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-10">
+                Pourquoi investir dans les cryptomonnaies ?
               </h2>
-              <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
-                Le Bitcoin offre des avantages stratégiques pour les entreprises cherchant à protéger leur capital.
+              <p className="max-w-[600px] text-primary-foreground/80 md:text-xl">
+                
               </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -386,7 +371,7 @@ export default function Home() {
                 Nos Services
               </h2>
               <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
-                Des solutions adaptées pour intégrer Bitcoin dans votre stratégie financière
+                Des conseils personnalisés et des signaux d'achat-vente pour maximiser vos profits.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -400,7 +385,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Formation des dirigeants et équipes financières aux fondamentaux de Bitcoin et à son positionnement comme actif stratégique au sein de la trésorerie d'entreprise.
+                    Formation aux fondamentaux des cryptomonnaies et stratégies d'investissement.
                   </p>
                 </CardContent>
               </Card>
@@ -414,7 +399,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Évaluation de la trésorerie et du contexte économique de l'entreprise pour structurer une allocation en Bitcoin.
+                    Analyse de votre profil et de vos objectifs pour une stratégie personnalisée.
                   </p>
                 </CardContent>
               </Card>
@@ -428,7 +413,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Conseil en investissement pour définir une stratégie d'exposition adaptée au contexte économique et aux conditions de marché.
+                    Conseil en investissement adapté au contexte économique et aux conditions de marché.
                   </p>
                 </CardContent>
               </Card>
@@ -442,7 +427,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Accompagnement opérationnel et structuration de l'environnement d'investissement.
+                    Accompagnement à la création de comptes, inscription aux plateformes et premiers dépôts.
                   </p>
                 </CardContent>
               </Card>
@@ -456,7 +441,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Encadrement opérationnel de l'exposition à Bitcoin, intégrant une veille de marché continue et des signaux d'ajustement alignés sur l'évolution du contexte économique.
+                    Suivi de marché et signaux d'achat-vente selon votre stratégie d'investissement.
                   </p>
                 </CardContent>
               </Card>
@@ -470,7 +455,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Accompagnement auprès des services comptables et juridiques de l'entreprise pour faciliter l'intégration de Bitcoin dans les processus internes.
+                    Assistance technique et fiscale pour l'intégration des cryptos dans votre patrimoine.
                   </p>
                 </CardContent>
               </Card>
@@ -492,7 +477,7 @@ export default function Home() {
                 Une expertise reconnue
               </h2>
               <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
-                Notre équipe d'experts vous accompagne dans la gestion de votre trésorerie en Bitcoin.
+                Bénéficiez de notre expertise pour optimiser vos investissements et maximiser vos profits.
               </p>
             </div>
             <div className="grid gap-8 md:grid-cols-2">
@@ -600,13 +585,13 @@ export default function Home() {
           <div className="container px-4 md:px-6 relative z-20">
             <div className="text-center mb-6">
               <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-2">
-                Prêt à commencer ?
+                Prêt à investir en crypto ?
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-2">
-                Prêt à optimiser votre trésorerie ?
+                Prêt à investir en crypto ?
               </h2>
               <p className="max-w-[600px] mx-auto text-muted-foreground md:text-xl">
-                Découvrez comment nous pouvons vous accompagner dans la gestion de votre trésorerie en Bitcoin.
+                Des conseils personnalisés et des signaux d'achat-vente pour maximiser vos profits.
               </p>
             </div>
             <div className="flex justify-center">
@@ -627,19 +612,10 @@ export default function Home() {
                     Contactez-nous
                   </h2>
                   <p className="max-w-[600px] text-primary-foreground/80 md:text-xl">
-                    Nous sommes là pour répondre à toutes vos questions sur la gestion de trésorerie en Bitcoin.
+                    Notre équipe d'experts vous guide vers les meilleures opportunités d'investissement.
                   </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <Link href="mailto:contact@bitsway.fr" className="flex items-center gap-4 group">
-                    <div className="p-2 rounded-lg bg-white transition-all duration-300 group-hover:shadow-inner group-hover:shadow-primary/20">
-                      <Mail className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-white">Email</h3>
-                      <p className="text-sm text-white/80">contact@bitsway.fr</p>
-                    </div>
-                  </Link>
                   <Link 
                     href="https://calendly.com/bitsway/nouvelle-reunion?preview_source=et_card"
                     target="_blank"
